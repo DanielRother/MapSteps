@@ -2,15 +2,18 @@ import { Button, Select, Space, Tag } from "antd";
 import countries from "i18n-iso-countries";
 import React, { useState } from "react";
 import ReactCountryFlag from "react-country-flag";
+import { useTranslation } from "next-i18next";
+import { i18n } from "../../next-i18next.config.js";
 
 const { Option, OptGroup } = Select;
 
 export default function CountrySelector() {
   const [selected, setSelected] = useState();
 
-  const SUPPORTED_LOCALES = ["de", "en"];
-  const USED_LOCALE = "de";
-  SUPPORTED_LOCALES.forEach((l) => {
+  const { t } = useTranslation();
+
+  const locale = t("locale");
+  i18n.locales.forEach((l) => {
     countries.registerLocale(
       require("i18n-iso-countries/langs/" + l + ".json"),
     );
@@ -31,7 +34,7 @@ export default function CountrySelector() {
       event.preventDefault();
       event.stopPropagation();
     };
-    const countryCode = countries.getAlpha2Code(label, USED_LOCALE);
+    const countryCode = countries.getAlpha2Code(label, locale);
     var flag = <ReactCountryFlag countryCode={countryCode} />;
     return (
       <Tag
@@ -54,7 +57,7 @@ export default function CountrySelector() {
       <Select
         mode="multiple"
         showSearch
-        placeholder="Wähle ein Land aus JSX"
+        placeholder={t("Select the countries you've visited yet")}
         style={{
           width: "100%",
         }}
@@ -65,12 +68,12 @@ export default function CountrySelector() {
         value={selected}
       >
         <OptGroup label="foo" key="foo">
-          {Object.values(countries.getNames(USED_LOCALE)).map((v) => {
+          {Object.values(countries.getNames(locale)).map((v) => {
             const alpha2 = countries
-              .getAlpha2Code(v, USED_LOCALE)
+              .getAlpha2Code(v, locale)
               .toLocaleLowerCase();
             const alpha3 = countries
-              .getAlpha3Code(v, USED_LOCALE)
+              .getAlpha3Code(v, locale)
               .toLocaleLowerCase();
             const flag = <ReactCountryFlag countryCode={alpha2} />;
 
@@ -89,7 +92,11 @@ export default function CountrySelector() {
           })}
         </OptGroup>
       </Select>
-      <Button onClick={clearSelected}>Clear Selected</Button>
+      <Button onClick={clearSelected}>{t("Clear selected countries")}</Button>
     </div>
   );
 }
+
+export const getServerSideProps = async ({ locales }) => {
+  console.log("locales: " + locales); // You should get an array of all locales
+};
