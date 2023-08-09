@@ -1,9 +1,11 @@
 import { Button, Select, Space, Tag } from "antd";
+import { getContinentCode, getContinentName } from "@brixtol/country-continent";
 import countries from "i18n-iso-countries";
 import React, { useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "next-i18next";
 import { i18n } from "../../next-i18next.config.js";
+import { groupBy } from "../../utils/utils.js";
 
 const { Option, OptGroup } = Select;
 
@@ -18,6 +20,15 @@ export default function CountrySelector() {
       require("i18n-iso-countries/langs/" + l + ".json"),
     );
   });
+
+  let c = countries.getNames(locale);
+  let countriesByContinents = groupBy(
+    Object.values(countries.getNames(locale)),
+    (c) => {
+      let cc = getContinentCode(countries.getAlpha2Code(c, locale));
+      return cc;
+    },
+  );
 
   const onChange = (value) => {
     console.log(`selected ${value}`);
@@ -52,23 +63,11 @@ export default function CountrySelector() {
     );
   };
 
-  return (
-    <div>
-      <Select
-        mode="multiple"
-        showSearch
-        placeholder={t("Select the countries you've visited yet")}
-        style={{
-          width: "100%",
-        }}
-        onChange={onChange}
-        tagRender={flagTagRender}
-        optionLabelProp="label"
-        optionFilterProp="label"
-        value={selected}
-      >
-        <OptGroup label="foo" key="foo">
-          {Object.values(countries.getNames(locale)).map((v) => {
+  const addCountryOptionsForContinent = (name, countriesForContinent) => {
+    return (
+      <>
+        <OptGroup label={name} key={name}>
+          {countriesForContinent.map((v) => {
             const alpha2 = countries
               .getAlpha2Code(v, locale)
               .toLocaleLowerCase();
@@ -91,12 +90,55 @@ export default function CountrySelector() {
             );
           })}
         </OptGroup>
+      </>
+    );
+  };
+
+  return (
+    <div>
+      <Select
+        mode="multiple"
+        showSearch
+        placeholder={t("Select the countries you've visited yet")}
+        style={{
+          width: "100%",
+        }}
+        onChange={onChange}
+        tagRender={flagTagRender}
+        optionLabelProp="label"
+        optionFilterProp="label"
+        value={selected}
+      >
+        {addCountryOptionsForContinent(
+          t("Asia"),
+          countriesByContinents.get("AS"),
+        )}
+        {addCountryOptionsForContinent(
+          t("Africa"),
+          countriesByContinents.get("AF"),
+        )}
+        {addCountryOptionsForContinent(
+          t("Europe"),
+          countriesByContinents.get("EU"),
+        )}
+        {addCountryOptionsForContinent(
+          t("Oceania"),
+          countriesByContinents.get("OC"),
+        )}
+        {addCountryOptionsForContinent(
+          t("North America"),
+          countriesByContinents.get("NA"),
+        )}
+        {addCountryOptionsForContinent(
+          t("South America"),
+          countriesByContinents.get("SA"),
+        )}
+        {addCountryOptionsForContinent(
+          t("Antarctica"),
+          countriesByContinents.get("AN"),
+        )}
       </Select>
       <Button onClick={clearSelected}>{t("Clear selected countries")}</Button>
     </div>
   );
 }
-
-export const getServerSideProps = async ({ locales }) => {
-  console.log("locales: " + locales); // You should get an array of all locales
-};

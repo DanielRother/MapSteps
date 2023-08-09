@@ -7,6 +7,7 @@
     "extract-translations": "i18next 'pages/**/*.{js,jx}' -c i18next-parser.config.js --fail-on-warnings"
   },
   "dependencies": {
+    "@brixtol/country-continent": "^1.0.0",
     "antd": "^5.8.2",
     "i18n-iso-countries": "^7.6.0",
     "i18next": "^23.4.4",

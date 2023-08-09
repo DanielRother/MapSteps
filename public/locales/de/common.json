@@ -1,6 +1,13 @@
 {
   "locale": "de",
   "Select the countries you've visited yet": "Wähle die von dir besuchten Länder aus",
+  "Asia": "Asien",
+  "Africa": "Afrika",
+  "Europe": "Europa",
+  "Oceania": "Ozeanien",
+  "North America": "Nordamerika",
+  "South America": "Südamerika",
+  "Antarctica": "Antarktika",
   "Clear selected countries": "Ausgewählte Länder löschen",
   "app_title": "Rubbelkarte"
 }
