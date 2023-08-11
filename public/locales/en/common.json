@@ -1,5 +1,4 @@
 {
-  "locale": "en",
   "Select the countries you've visited yet": "Select the countries you've visited yet",
   "Asia": "Asia",
   "Africa": "Africa",
@@ -9,5 +8,7 @@
   "South America": "South America",
   "Antarctica": "Antarctica",
   "Clear selected countries": "Clear selected countries",
+  "Visited countries": "Visited countries",
+  "locale": "en",
   "app_title": "Scratchmap"
 }

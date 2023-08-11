@@ -1,5 +1,4 @@
 {
-  "locale": "de",
   "Select the countries you've visited yet": "Wähle die von dir besuchten Länder aus",
   "Asia": "Asien",
   "Africa": "Afrika",
@@ -9,5 +8,7 @@
   "South America": "Südamerika",
   "Antarctica": "Antarktika",
   "Clear selected countries": "Ausgewählte Länder löschen",
+  "Visited countries": "Besuchte Länder",
+  "locale": "de",
   "app_title": "Rubbelkarte"
 }

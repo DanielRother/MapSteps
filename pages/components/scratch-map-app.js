@@ -3,9 +3,10 @@ import { useTranslation } from "next-i18next";
 
 import CountrySelector from "./country-selector";
 import CountryStatistic from "./country-statistic";
+import ScratchMapImage from "./scratch-map-image";
 
 export default function ScratchMapApp() {
-    const [selected, setSelected] = useState();
+    const [selected, setSelected] = useState([]);
 
     const { t } = useTranslation();
 
@@ -13,6 +14,7 @@ export default function ScratchMapApp() {
         <>
             <CountrySelector selected={selected} setSelected={setSelected} />
             <CountryStatistic selected={selected} />
+            <ScratchMapImage selected={selected} />
         </>
     );
 }
