@@ -1,7 +1,6 @@
 import { Button, Select, Space, Tag } from "antd";
 import { getContinentCode, getContinentName } from "@brixtol/country-continent";
 import countries from "i18n-iso-countries";
-import React, { useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "next-i18next";
 import { i18n } from "../../next-i18next.config.js";
@@ -9,9 +8,7 @@ import { groupBy } from "../../utils/utils.js";
 
 const { Option, OptGroup } = Select;
 
-export default function CountrySelector() {
-    const [selected, setSelected] = useState();
-
+export default function CountrySelector({ selected, setSelected }) {
     const { t } = useTranslation();
     const locale = t("locale");
 
@@ -43,7 +40,7 @@ export default function CountrySelector() {
         const countryCode = countries.getAlpha2Code(label, locale);
         var flag = <ReactCountryFlag countryCode={countryCode} />;
         return (
-            <Tag onMouseDown={onPreventMouseDown} closable={closable} onClose={onClose} icon={flag}>
+            <Tag onMouseDown={onPreventMouseDown} closable={closable} onClose={onClose} icon={flag} key={countryCode}>
                 {label}
             </Tag>
         );

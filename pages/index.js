@@ -1,37 +1,33 @@
 import Head from "next/head";
 
-import CountrySelector from "./components/country-selector";
-import LanguageSwitcher from "./components/language-switcher";
-
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import ScratchMapApp from "./components/scratch-map-app";
 
-export default function ScratchmapApp({ locale }) {
-  const { t } = useTranslation();
+export default function Main({ locale }) {
+    const { t } = useTranslation();
 
-  return (
-    <>
-      <Head>
-        <title>{t("app_title")}</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    return (
+        <>
+            <Head>
+                <title>{t("app_title")}</title>
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
 
-      <main>
-        {/* <LanguageSwitcher /> */}
-        <CountrySelector />
-      </main>
-    </>
-  );
+            <main>
+                <ScratchMapApp />
+            </main>
+        </>
+    );
 }
 
 export const getServerSideProps = async (context) => {
-  const { locale } = context;
+    const { locale } = context;
 
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ["common"])),
-      locale,
-    },
-  };
+    return {
+        props: {
+            ...(await serverSideTranslations(locale, ["common"])),
+            locale,
+        },
+    };
 };
-
