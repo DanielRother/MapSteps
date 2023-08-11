@@ -1,10 +1,6 @@
 import { Button, Select, Space, Tag } from "antd";
-import { getContinentCode, getContinentName } from "@brixtol/country-continent";
-import countries from "i18n-iso-countries";
-import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "next-i18next";
-import { i18n } from "../../next-i18next.config.js";
-import { groupBy } from "../../utils/utils.js";
+import { groupBy, getAllCountriesData } from "../../utils/utils.js";
 
 const { Option, OptGroup } = Select;
 
@@ -12,14 +8,9 @@ export default function CountrySelector({ selected, setSelected }) {
     const { t } = useTranslation();
     const locale = t("locale");
 
-    i18n.locales.forEach((l) => {
-        countries.registerLocale(require("i18n-iso-countries/langs/" + l + ".json"));
-    });
-
-    let c = countries.getNames(locale);
-    let countriesByContinents = groupBy(Object.values(countries.getNames(locale)), (c) => {
-        let cc = getContinentCode(countries.getAlpha2Code(c, locale));
-        return cc;
+    const allCountriesData = getAllCountriesData();
+    const countriesByContinents = groupBy(allCountriesData, (c) => {
+        return c.continentCode;
     });
 
     const onChange = (value) => {
@@ -31,38 +22,19 @@ export default function CountrySelector({ selected, setSelected }) {
         setSelected([]);
     };
 
-    const flagTagRender = (props) => {
-        const { label, value, closable, onClose } = props;
-        const onPreventMouseDown = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-        };
-        const countryCode = countries.getAlpha2Code(label, locale);
-        var flag = <ReactCountryFlag countryCode={countryCode} />;
-        return (
-            <Tag onMouseDown={onPreventMouseDown} closable={closable} onClose={onClose} icon={flag} key={countryCode}>
-                {label}
-            </Tag>
-        );
-    };
-
     const addCountryOptionsForContinent = (name, countriesForContinent) => {
         return (
             <>
                 <OptGroup label={name} key={name}>
-                    {countriesForContinent.map((v) => {
-                        const alpha2 = countries.getAlpha2Code(v, locale).toLocaleLowerCase();
-                        const alpha3 = countries.getAlpha3Code(v, locale).toLocaleLowerCase();
-                        const flag = <ReactCountryFlag countryCode={alpha2} />;
-
+                    {countriesForContinent.map((c) => {
                         return (
                             <>
-                                <Option value={alpha3} label={v} key={alpha3}>
+                                <Option value={c.alpha3} label={c.countryName} key={c.alpha3}>
                                     <Space>
-                                        <span role="img" aria-label={alpha3}>
-                                            {flag}
+                                        <span role="img" aria-label={c.alpha3}>
+                                            {c.flag}
                                         </span>
-                                        {v}
+                                        {c.countryName}
                                     </Space>
                                 </Option>
                             </>
@@ -73,6 +45,26 @@ export default function CountrySelector({ selected, setSelected }) {
         );
     };
 
+    const flagTagRender = (props) => {
+        const { label, value, closable, onClose } = props;
+        const onPreventMouseDown = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        };
+        const countryData = allCountriesData.get(value);
+
+        return (
+            <Tag
+                onMouseDown={onPreventMouseDown}
+                closable={closable}
+                onClose={onClose}
+                icon={countryData.flag}
+                key={countryData.countryCode}
+            >
+                {countryData.countryName}
+            </Tag>
+        );
+    };
     return (
         <div>
             <Select
