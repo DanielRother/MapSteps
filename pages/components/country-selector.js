@@ -6,7 +6,6 @@ const { Option, OptGroup } = Select;
 
 export default function CountrySelector({ selected, setSelected }) {
     const { t } = useTranslation();
-    const locale = t("locale");
 
     const allCountriesData = getAllCountriesData();
     const countriesByContinents = groupBy(allCountriesData, (c) => {
