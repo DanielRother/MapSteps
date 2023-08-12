@@ -60,10 +60,10 @@ export default function ScratchMapImage({ selected }) {
     return (
         <>
             <Row gutter={16}>
-                <Col span={3}>
+                <Col span={4}>
                     <Button onClick={generateApiCall}>{t("Update Map")}</Button>
                 </Col>{" "}
-                <Col span={3}>
+                <Col span={6}>
                     <Switch
                         defaultChecked={autoreload}
                         onChange={(checked) => {

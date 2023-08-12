@@ -1,4 +1,4 @@
-import { Button, Select, Space, Tag } from "antd";
+import { Button, Icon, Select, Space, Tag, Upload } from "antd";
 import { useTranslation } from "next-i18next";
 import { groupBy, getAllCountriesData } from "../../utils/utils.js";
 
@@ -19,6 +19,23 @@ export default function CountrySelector({ selected, setSelected }) {
 
     const clearSelected = () => {
         setSelected([]);
+    };
+    const saveSelected = () => {
+        const json = JSON.stringify({ countries: selected }, null, 4);
+        var blob = new Blob([json], { type: "text/json;charset=utf-8" });
+        var FileSaver = require("file-saver");
+        FileSaver.saveAs(blob, "countries.json");
+    };
+    const loadSelected = (file) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            setSelected(JSON.parse(e.target.result).countries);
+        };
+        reader.readAsText(file);
+
+        // Prevent upload
+        return false;
     };
 
     const addCountryOptionsForContinent = (name, countriesForContinent) => {
@@ -87,7 +104,14 @@ export default function CountrySelector({ selected, setSelected }) {
                 {addCountryOptionsForContinent(t("South America"), countriesByContinents.get("SA"))}
                 {addCountryOptionsForContinent(t("Antarctica"), countriesByContinents.get("AN"))}
             </Select>
-            <Button onClick={clearSelected}>{t("Clear selected countries")}</Button>
+            <Button onClick={clearSelected}>{t("Clear")}</Button>
+            <Button onClick={saveSelected}>{t("Save")}</Button>
+            <Upload accept=".json" showUploadList={false} beforeUpload={loadSelected}>
+                <Button>
+                    <Icon type="upload" />
+                    {t("Load")}
+                </Button>
+            </Upload>
         </div>
     );
 }
