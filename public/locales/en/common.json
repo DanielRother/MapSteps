@@ -10,5 +10,7 @@
   "Clear selected countries": "Clear selected countries",
   "Visited countries": "Visited countries",
   "locale": "en",
+  "Update Map": "Update Map",
+  "Autoreload": "Autoreload",
   "app_title": "Scratchmap"
 }

@@ -10,5 +10,7 @@
   "Clear selected countries": "Ausgewählte Länder löschen",
   "Visited countries": "Besuchte Länder",
   "locale": "de",
+  "Update Map": "Karte aktualisieren",
+  "Autoreload": "Automatisch aktualisieren",
   "app_title": "Rubbelkarte"
 }
