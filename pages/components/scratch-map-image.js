@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Col, Image, Row, Switch } from "antd";
+import { Button, Col, Image, Radio, Row, Switch } from "antd";
 import { useTranslation } from "next-i18next";
 
 export default function ScratchMapImage({ selected }) {
     const [autoreload, setAutoreload] = useState(false);
+    const [bbox, setBbox] = useState([-180, -70, 180, 80]);
     const [apiCall, setApiCall] = useState("");
 
     const { t } = useTranslation();
@@ -13,7 +14,7 @@ export default function ScratchMapImage({ selected }) {
         if (autoreload) {
             generateApiCall();
         }
-    }, [selected, autoreload]);
+    }, [selected, autoreload, bbox]);
 
     const generateApiCall = () => {
         let filter = ["!in", "iso_3166_1_alpha_3"].concat(selected);
@@ -37,11 +38,7 @@ export default function ScratchMapImage({ selected }) {
         const username = process.env.NEXT_PUBLIC_MAPBOX_USERNAME;
         const style_id = process.env.NEXT_PUBLIC_MAPBOX_STYLE_ID;
         const access_token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-        const lon_min = -180;
-        const lat_min = -70;
-        const lon_max = 180;
-        const lat_max = 80;
-        const bbox = [lon_min, lat_min, lon_max, lat_max];
+
         const width = 1280;
         const height = 1280;
         const showLogo = true;
@@ -56,6 +53,67 @@ export default function ScratchMapImage({ selected }) {
 
     const fallback =
         "data:image/png;base64,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";
+
+    const onMapSectionChanged = (e) => {
+        console.log("event: " + e.target.value);
+
+        let lon_min;
+        let lat_min;
+        let lon_max;
+        let lat_max;
+        switch (e.target.value) {
+            case "W":
+                lon_min = -180;
+                lat_min = -70;
+                lon_max = 180;
+                lat_max = 80;
+                break;
+            case "AS":
+                lon_min = 20;
+                lat_min = -11;
+                lon_max = 180;
+                lat_max = 75;
+                break;
+            case "AF":
+                lon_min = -20;
+                lat_min = -36;
+                lon_max = 53;
+                lat_max = 38;
+                break;
+            case "EU":
+                lon_min = -29;
+                lat_min = 33;
+                lon_max = 50;
+                lat_max = 72;
+                break;
+            case "OC":
+                lon_min = 107;
+                lat_min = -49;
+                lon_max = 194;
+                lat_max = -6;
+                break;
+            case "NA":
+                lon_min = -171;
+                lat_min = 6;
+                lon_max = -47;
+                lat_max = 72;
+                break;
+            case "SA":
+                lon_min = -93;
+                lat_min = -56;
+                lon_max = -33;
+                lat_max = 13;
+                break;
+            case "AN":
+                lon_min = -180;
+                lat_min = -85.0511;
+                lon_max = 180;
+                lat_max = -56;
+                break;
+        }
+
+        setBbox([lon_min, lat_min, lon_max, lat_max]);
+    };
 
     return (
         <>
@@ -75,10 +133,24 @@ export default function ScratchMapImage({ selected }) {
             </Row>
             <Row gutter={16}>
                 <Col span={16}>
+                    <Radio.Group defaultValue="W" buttonStyle="solid" onChange={onMapSectionChanged}>
+                        <Radio.Button value="W">{t("World")}</Radio.Button>
+                        <Radio.Button value="AS">{t("Asia")}</Radio.Button>
+                        <Radio.Button value="AF">{t("Africa")}</Radio.Button>
+                        <Radio.Button value="EU">{t("Europe")}</Radio.Button>
+                        <Radio.Button value="OC">{t("Oceania")}</Radio.Button>
+                        <Radio.Button value="NA">{t("North America")}</Radio.Button>
+                        <Radio.Button value="SA">{t("South America")}</Radio.Button>
+                        <Radio.Button value="AN">{t("Antarctica")}</Radio.Button>
+                    </Radio.Group>
+                </Col>
+            </Row>
+            <Row gutter={16}>
+                <Col span={16}>
                     <Image width={800} src={apiCall} fallback={fallback} />
                 </Col>
             </Row>
-            {/* <p>apiCall: {apiCall}</p> */}
+            <p>apiCall: {apiCall}</p>
         </>
     );
 }

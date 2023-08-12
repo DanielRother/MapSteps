@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
-import { Button, Radio, Select, Space, Tag } from "antd";
-const { Option, OptGroup } = Select;
+import { Radio } from "antd";
 import { useTranslation } from "next-i18next";
 import React, { useState } from "react";
 
@@ -11,9 +10,6 @@ export default function LanguageSwitcher() {
 
     const [size, setSize] = useState(locale);
 
-    const handleSizeChange = (e) => {
-        setSize(e.target.value);
-    };
     return (
         <div>
             <Radio.Group
