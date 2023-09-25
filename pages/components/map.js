@@ -29,7 +29,7 @@ const Map = () => {
                 address: "",
                 lat: 42.3069694,
                 lon: 18.7984001,
-                color: "#20bf6b",
+                color: "#fed330",
             },
             {
                 name: "Unterkunft Nikšić",
@@ -120,6 +120,7 @@ const Map = () => {
         ],
     };
     let homes = mnePois.homes;
+    let pois = mnePois.pois;
     console.log(homes);
 
     // Working
@@ -228,7 +229,16 @@ const Map = () => {
                     <Marker
                         key={h.name}
                         position={[h.lat, h.lon]}
-                        icon={AwesomeIconToMarker({ iconName: "location-pin-7", color: h.color })}
+                        icon={AwesomeIconToMarker({ iconName: "location-pin-house", color: h.color })}
+                    >
+                        <Popup>{h.name}</Popup>
+                    </Marker>
+                ))}
+                {pois.map((h, index) => (
+                    <Marker
+                        key={h.name}
+                        position={[h.lat, h.lon]}
+                        icon={AwesomeIconToMarker({ iconName: "location-pin-number-" + (index + 1), color: h.color })}
                     >
                         <Popup>{h.name}</Popup>
                     </Marker>
