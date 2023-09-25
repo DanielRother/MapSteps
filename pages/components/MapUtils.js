@@ -39,6 +39,37 @@ export function AwesomeIconToMarker({ iconName, color }) {
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M384 192c0 87.4-117 243-168.3 307.2c-12.3 15.3-35.1 15.3-47.4 0C117 435 0 279.4 0 192C0 86 86 0 192 0S384 86 384 192z"/></svg>',
         "location-dot":
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>',
+        "location-pin-9":
+            '<span class="fa-layers fa-fw fa-lg">\
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="location-pin" class="svg-inline--fa fa-location-pin " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M384 192c0 87.4-117 243-168.3 307.2c-12.3 15.3-35.1 15.3-47.4 0C117 435 0 279.4 0 192C0 86 86 0 192 0S384 86 384 192z"></path></svg>\
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="9" class="svg-inline--fa fa-9 fa-inverse " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="transform-origin: 0.3125em 0.5em 0px;"><g transform="translate(160 256)"><g transform="translate(0, 0)  scale(0.5625, 0.5625)  rotate(0 0 0)"><path fill="currentColor" d="M64 192a96 96 0 1 0 192 0A96 96 0 1 0 64 192zm87.5 159.8C67.1 347.4 0 277.5 0 192C0 103.6 71.6 32 160 32s160 71.6 160 160c0 2.6-.1 5.3-.2 7.9c-1.7 35.7-15.2 70-38.4 97.4l-145 171.4c-11.4 13.5-31.6 15.2-45.1 3.8s-15.2-31.6-3.8-45.1l63.9-75.6z" transform="translate(-160 -256)"></path></g></g></svg>\
+            </span>',
+        "location-pin-9b":
+            '<span class="fa-layers fa-fw fa-lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M384 192c0 87.4-117 243-168.3 307.2c-12.3 15.3-35.1 15.3-47.4 0C117 435 0 279.4 0 192C0 86 86 0 192 0S384 86 384 192z"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M64 192a96 96 0 1 0 192 0A96 96 0 1 0 64 192zm87.5 159.8C67.1 347.4 0 277.5 0 192C0 103.6 71.6 32 160 32s160 71.6 160 160c0 2.6-.1 5.3-.2 7.9c-1.7 35.7-15.2 70-38.4 97.4l-145 171.4c-11.4 13.5-31.6 15.2-45.1 3.8s-15.2-31.6-3.8-45.1l63.9-75.6z"/></svg>',
+        "location-pin-7":
+            '<span class="fa-layers fa-fw">\
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="location-pin" class="svg-inline--fa fa-location-pin " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="transform-origin:0.375em 0.5em">\
+                    <g transform="translate(192 256)">\
+                    <g transform="translate(0, 0)  scale(2.5625, 2.5625)  rotate(0 0 0)">\
+                        <path fill="currentColor" d="M384 192c0 87.4-117 243-168.3 307.2c-12.3 15.3-35.1 15.3-47.4 0C117 435 0 279.4 0 192C0 86 86 0 192 0S384 86 384 192z" transform="translate(-192 -256)"></path>\
+                    </g>\
+                    </g>\
+                </svg>\
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="0" class="svg-inline--fa fa-0 fa-inverse " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="transform-origin:0em 0.1875em">\
+                    <g transform="translate(160 256)">\
+                    <g transform="translate(-160, -160)  scale(1, 1)  rotate(0 0 0)">\
+                        <path fill="currentColor" d="M0 192C0 103.6 71.6 32 160 32s160 71.6 160 160V320c0 88.4-71.6 160-160 160S0 408.4 0 320V192zM160 96c-53 0-96 43-96 96V320c0 53 43 96 96 96s96-43 96-96V192c0-53-43-96-96-96z" transform="translate(-160 -256)"></path>\
+                    </g>\
+                    </g>\
+                </svg>\
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="7" class="svg-inline--fa fa-7 fa-inverse " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="transform-origin:0.625em 0.1875em">\
+                    <g transform="translate(160 256)">\
+                    <g transform="translate(160, -160)  scale(1, 1)  rotate(0 0 0)">\
+                        <path fill="currentColor" d="M0 64C0 46.3 14.3 32 32 32H288c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-224 384c-8.9 15.3-28.5 20.4-43.8 11.5s-20.4-28.5-11.5-43.8L232.3 96H32C14.3 96 0 81.7 0 64z" transform="translate(-160 -256)"></path>\
+                    </g>\
+                    </g>\
+                </svg>\
+               </span>',
     };
 
     var iconSettings = {

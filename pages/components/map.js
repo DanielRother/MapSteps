@@ -3,7 +3,20 @@ import "leaflet/dist/leaflet.css";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import the icons you need
-import { faSearch, faAmbulance, faAnchor, faCoffee } from "@fortawesome/free-solid-svg-icons";
+import {
+    faSearch,
+    faAmbulance,
+    faAnchor,
+    faCoffee,
+    faChevronDown,
+    faCircle,
+    faCheck,
+    fa5,
+    fa9,
+    faLocationPin,
+} from "@fortawesome/free-solid-svg-icons";
+
+// library.add(faBug, faBugs, faCoffee);
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 
@@ -124,11 +137,82 @@ const Map = () => {
             icon={AwesomeIconToMarker({ iconName: "location-pin", color: homes[1].color })}
         />
     );
+    console.log("new Marker:");
+    console.log(newMarker);
+
+    // Try to use svg directly
+    var iconSettings = {
+        // mapIconUrl: icons[iconName],
+        mapIconUrl: { faCircle },
+    };
+
+    // icon normal state
+    var divIcon = L.divIcon({
+        className: "leaflet-data-marker",
+        html: { faCircle },
+        iconAnchor: [12, 32],
+        iconSize: [25, 30],
+        popupAnchor: [0, -28],
+    });
+    <Marker
+        key="foo"
+        position={[42.3880067, 18.9255706]}
+        // icon={AwesomeIconToMarker({ iconName: "location-pin", color: "#006600" })}
+        icon={divIcon}
+    />;
+    console.log("divIcon:");
+    console.log(divIcon);
+
+    // var faIcon = <FontAwesomeIcon icon={faAmbulance} style={{ color: "#20bf6b" }} />;
+
+    // var iconSettings = {
+    //     mapIconUrl: faIcon,
+    // };
+    // var divIcon = L.divIcon({
+    //     className: "leaflet-data-marker",
+    //     html: L.Util.template(iconSettings.mapIconUrl, iconSettings)
+    //         .replace("#", "%23")
+    //         .replace("svg", `svg id="${iconName}_${color}}"`),
+    //     iconAnchor: [12, 32],
+    //     iconSize: [25, 30],
+    //     popupAnchor: [0, -28],
+    // });
 
     return (
         <>
             <FontAwesomeIcon icon={faAmbulance} style={{ color: "#20bf6b" }} />
-            {/* <FontAwesomeIcon icon={["fas", "coffee"]} /> */}
+            <div style={{ position: "relative" }}>
+                <FontAwesomeIcon icon={faCircle} />
+                <span style={{ position: "absolute" }}>2</span>
+            </div>
+            <FontAwesomeIcon icon={faCoffee} />
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} />
+                <FontAwesomeIcon icon={fa9} transform="shrink-7" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-4 up-2" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-7 up-2 left-3" inverse />
+                <FontAwesomeIcon icon={fa9} transform="shrink-7 up-2 right-3" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-7 up-2" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            {/* <span class="fa-layers fa-fw" style="background:MistyRose">
+                <FontAwesomeIcon icon={faCircle} />{" "}
+                <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-8 down-3" style="font-weight:900">
+                    27
+                </span>
+            </span> */}
 
             <MapContainer
                 center={[42.3880067, 18.9255706]}
@@ -144,8 +228,10 @@ const Map = () => {
                     <Marker
                         key={h.name}
                         position={[h.lat, h.lon]}
-                        icon={AwesomeIconToMarker({ iconName: "location-pin", color: h.color })}
-                    />
+                        icon={AwesomeIconToMarker({ iconName: "location-pin-7", color: h.color })}
+                    >
+                        <Popup>{h.name}</Popup>
+                    </Marker>
                 ))}
             </MapContainer>
         </>
