@@ -47,3 +47,9 @@ button {
   padding: 0.5rem 1rem;
   font-weight: bold;
 }
+
+/* #map { height: 90%; } */
+
+.leaflet-control-container .leaflet-routing-container-hide {
+    display: none;
+}

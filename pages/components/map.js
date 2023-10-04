@@ -20,6 +20,8 @@ import {
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 
+import RoutingMachine from "./routing-machine";
+
 const Map = () => {
     let mnePois = {
         name: "l",
@@ -121,63 +123,22 @@ const Map = () => {
     };
     let homes = mnePois.homes;
     let pois = mnePois.pois;
-    console.log(homes);
 
-    // Working
-    let oldMarker = (
-        <Marker
-            key={homes[0].name}
-            position={[homes[0].lat, homes[0].lon]}
-            icon={SvgMarker({ color: homes[0].color })}
-        />
-    );
-    let newMarker = (
-        <Marker
-            key={homes[1].name}
-            position={[homes[1].lat, homes[1].lon]}
-            icon={AwesomeIconToMarker({ iconName: "location-pin", color: homes[1].color })}
-        />
-    );
-    console.log("new Marker:");
-    console.log(newMarker);
+    let routeLinecolor = "#eb3b5a";
+    // console.log(homes);
 
-    // Try to use svg directly
-    var iconSettings = {
-        // mapIconUrl: icons[iconName],
-        mapIconUrl: { faCircle },
-    };
-
-    // icon normal state
-    var divIcon = L.divIcon({
-        className: "leaflet-data-marker",
-        html: { faCircle },
-        iconAnchor: [12, 32],
-        iconSize: [25, 30],
-        popupAnchor: [0, -28],
-    });
-    <Marker
-        key="foo"
-        position={[42.3880067, 18.9255706]}
-        // icon={AwesomeIconToMarker({ iconName: "location-pin", color: "#006600" })}
-        icon={divIcon}
-    />;
-    console.log("divIcon:");
-    console.log(divIcon);
-
-    // var faIcon = <FontAwesomeIcon icon={faAmbulance} style={{ color: "#20bf6b" }} />;
-
-    // var iconSettings = {
-    //     mapIconUrl: faIcon,
-    // };
-    // var divIcon = L.divIcon({
-    //     className: "leaflet-data-marker",
-    //     html: L.Util.template(iconSettings.mapIconUrl, iconSettings)
-    //         .replace("#", "%23")
-    //         .replace("svg", `svg id="${iconName}_${color}}"`),
-    //     iconAnchor: [12, 32],
-    //     iconSize: [25, 30],
-    //     popupAnchor: [0, -28],
-    // });
+    // let waypoints = [
+    //     {
+    //         latitude: homes[0].lat,
+    //         longitude: homes[0].lon,
+    //     },
+    //     {
+    //         latitude: pois[0].lat,
+    //         longitude: pois[0].lon,
+    //     },
+    // ];
+    let waypoints = [homes[0], pois[1]];
+    // console.log("Waypoints: " + waypoints);
 
     return (
         <>
@@ -208,23 +169,20 @@ const Map = () => {
                 <FontAwesomeIcon icon={fa5} transform="shrink-7 up-2" inverse />
                 {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
             </span>
-            {/* <span class="fa-layers fa-fw" style="background:MistyRose">
-                <FontAwesomeIcon icon={faCircle} />{" "}
-                <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-8 down-3" style="font-weight:900">
-                    27
-                </span>
-            </span> */}
 
             <MapContainer
                 center={[42.3880067, 18.9255706]}
                 zoom={10}
                 scrollWheelZoom={true}
-                style={{ height: 400, width: "100%" }}
+                style={{ height: 750, width: "100%" }}
             >
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
+                <RoutingMachine waypoints={waypoints} linecolor={routeLinecolor} />
+
                 {homes.map((h) => (
                     <Marker
                         key={h.name}

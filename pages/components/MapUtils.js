@@ -2493,8 +2493,10 @@ export function AwesomeIconToMarker({ iconName, color }) {
             .replace("#", "%23")
             .replace("svg", `svg id="${iconName}_${color}}"`)
             .replace("path", `path fill="${color}"`),
-        iconAnchor: [12, 32],
-        iconSize: [25, 30],
+        // iconAnchor: [12, 32],
+        iconAnchor: [7, 25],
+        // iconSize: [25, 30],
+        // iconSize: [100, 30],
         popupAnchor: [0, -28],
     });
 
