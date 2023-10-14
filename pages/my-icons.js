@@ -9,6 +9,34 @@ export default function MyIcons() {
     for (var n = 0; n < 100; ++n) icons.push(<DecoratedLocationPin number={n} />);
     return (
         <>
+            <FontAwesomeIcon icon={faAmbulance} style={{ color: "#20bf6b" }} />
+            <div style={{ position: "relative" }}>
+                <FontAwesomeIcon icon={faCircle} />
+                <span style={{ position: "absolute" }}>2</span>
+            </div>
+            <FontAwesomeIcon icon={faCoffee} />
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} />
+                <FontAwesomeIcon icon={fa9} transform="shrink-7" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-4 up-2" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-7 up-2 left-3" inverse />
+                <FontAwesomeIcon icon={fa9} transform="shrink-7 up-2 right-3" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+            <span className="fa-layers fa-fw fa-lg">
+                <FontAwesomeIcon icon={faLocationPin} size="xl" />
+                <FontAwesomeIcon icon={fa5} transform="shrink-7 up-2" inverse />
+                {/* <i class="fa-inverse fa-solid fa-times" data-fa-transform="shrink-6"></i> */}
+            </span>
+
             <div>{icons}</div>
             <DecoratedLocationPin icon={faHouse} />
             <DecoratedLocationPin icon={faTree} />

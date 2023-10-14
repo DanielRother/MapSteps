@@ -1,6 +1,7 @@
 import { appWithTranslation } from "next-i18next";
 import Header from "./components/header";
 import "../styles/globals.css";
+import "leaflet/dist/leaflet.css";
 
 // import Font Awesome CSS
 import "@fortawesome/fontawesome-svg-core/styles.css";
