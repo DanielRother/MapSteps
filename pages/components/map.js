@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
+import MapPrint from "./map-print";
 
 const Map = ({ homes, pois, routes }) => {
     const DEFAULT_ZOOM = 10;
@@ -30,6 +31,15 @@ const Map = ({ homes, pois, routes }) => {
                 scrollWheelZoom={true}
                 style={{ height: 750, width: "100%" }}
             >
+                {/* Filename could be usefull */}
+                <MapPrint
+                    position="topleft"
+                    sizeModes={["Current", "A4Portrait", "A4Landscape"]}
+                    hideControlContainer={true}
+                    title="Export as PNG"
+                    exportOnly
+                />
+
                 <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
