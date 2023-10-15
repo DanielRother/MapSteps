@@ -1,13 +1,10 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import RoutingMachine from "./routing-machine";
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 
-import RoutingMachine from "./routing-machine";
-
 const Map = ({ homes, pois, routes }) => {
-    let routeLinecolor = "#eb3b5a";
-
     // TODO: Calc center and zoom
 
     return (

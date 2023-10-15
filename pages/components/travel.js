@@ -1,19 +1,72 @@
 import dynamic from "next/dynamic";
+import React, { useState } from "react";
+
 import Map from "./map";
 
-// const Map = dynamic(
-//     () => import("./components/map"), // replace '@components/map' with your component's location
-//     { loading: () => <p>A map is loading</p>, ssr: false }, // This line is important. It's what prevents server-side render
-// );
-
 const Travel = () => {
-    let mne2 = {
+    const getPlaces = (data, type) => {
+        // console.log(data);
+        // console.log("Get places of type " + type + " for " + data.name);
+        let places = [];
+
+        if (data.type === type) {
+            places.push(data);
+        }
+
+        data.steps.forEach((step) => {
+            // console.log(step.name);
+            if (step.type === type) {
+                places.push(step);
+            }
+
+            if (step.hasOwnProperty("steps")) {
+                // console.log("check children");
+                // console.log(step.hasOwnProperty("steps"));
+                // console.log(step.steps);
+
+                step.steps.forEach((child) => {
+                    let childrenPlaces = getPlaces(child, type);
+                    places = places.concat(childrenPlaces);
+                });
+            }
+        });
+
+        return places;
+    };
+
+    const getRoutes = (data) => {
+        let stages = getPlaces(data, "Stage");
+
+        let routes = [];
+        stages.forEach((stage) => {
+            let waypoints = [];
+            let color = "#fa8231";
+            stage.steps.forEach((step) => {
+                waypoints.push(step);
+            });
+
+            if (stage.useForRouting) {
+                color = "#eb3b5a";
+                waypoints.unshift(stage);
+                waypoints.push(stage);
+            }
+
+            let route = {
+                waypoints: waypoints,
+                color: color,
+            };
+
+            routes.push(route);
+        });
+
+        return routes;
+    };
+
+    let newMnePois = {
         name: "Montenegro",
-        address: "",
-        lat: 42.3069694,
-        lon: 18.7984001,
         color: "#3867d6",
         type: "Stage",
+        useForRouting: false,
         steps: [
             {
                 name: "Grenze HRV -> MNE",
@@ -46,6 +99,7 @@ const Travel = () => {
                         lon: 18.7984001,
                         color: "#3867d6",
                         type: "Stage",
+                        useForRouting: true,
                         steps: [
                             {
                                 name: "Kotor",
@@ -72,6 +126,7 @@ const Travel = () => {
                         lon: 18.7984001,
                         color: "#3867d6",
                         type: "Stage",
+                        useForRouting: true,
                         steps: [
                             {
                                 name: "NP Lovćen",
@@ -98,6 +153,7 @@ const Travel = () => {
                         lon: 18.7984001,
                         color: "#3867d6",
                         type: "Stage",
+                        useForRouting: true,
                         steps: [
                             {
                                 name: "Budva",
@@ -116,6 +172,7 @@ const Travel = () => {
                         lon: 18.7984001,
                         color: "#3867d6",
                         type: "Stage",
+                        useForRouting: true,
                         steps: [
                             {
                                 name: "NP Skutarisee",
@@ -152,6 +209,7 @@ const Travel = () => {
                         lon: 18.899258,
                         color: "#3867d6",
                         type: "Stage",
+                        useForRouting: true,
                         steps: [
                             {
                                 name: "Crno Jezero",
@@ -192,7 +250,12 @@ const Travel = () => {
         ],
     };
 
-    let mnePois = {
+    // TODO: Improve the loading once the data is really received from somewhere...
+    const [homes, setHomes] = useState(getPlaces(newMnePois, "Home"));
+    const [pois, setPois] = useState(getPlaces(newMnePois, "POI"));
+    const [routes, setRoutes] = useState(getRoutes(newMnePois));
+
+    let oldMnePois = {
         name: "l",
         homes: [
             {
@@ -290,25 +353,9 @@ const Travel = () => {
             },
         ],
     };
-    let homes = mnePois.homes;
-    let pois = mnePois.pois;
-
-    let routeLinecolor = "#eb3b5a";
-
-    let waypoints = [homes[0], pois[1]];
-    let waypoints2 = [homes[0], pois[6]];
-
-    let routes = [
-        {
-            waypoints: [homes[0], pois[1]],
-            color: "#eb3b5a",
-        },
-        {
-            waypoints: [homes[0], pois[6]],
-            color: "#fa8231",
-        },
-    ];
-    // console.log("Waypoints: " + waypoints);
+    let oldHomes = oldMnePois.homes;
+    let oldPois = oldMnePois.pois;
+    // console.log(oldPois);
 
     return (
         <>

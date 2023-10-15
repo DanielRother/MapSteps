@@ -6,7 +6,9 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 const createRoutineMachineLayer = ({ waypoints, linecolor }) => {
     const instance = L.Routing.control({
         waypoints: waypoints.map(({ lat, lon }) => L.latLng(lat, lon)),
-        draggableWaypoints: false,
+        addWaypoints: false, // Can new waypoints be added by the use
+        draggableWaypoints: false, // Can waypoints be dragged in the map
+        fitSelectedRoutes: false, // prevents zoom on the added route
         // router: new L.Routing.Google(),
         lineOptions: {
             styles: [
