@@ -1,20 +1,36 @@
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import L, { LatLng, latLngBounds, FeatureGroup } from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 
 const Map = ({ homes, pois, routes }) => {
-    // TODO: Calc center and zoom
+    const DEFAULT_ZOOM = 10;
+    const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
+
+    function ChangeView({ center, markers }) {
+        const map = useMap();
+        map.setView({ lng: center.lon, lat: center.lat }, DEFAULT_ZOOM);
+
+        let markerBounds = latLngBounds([]);
+        markers.forEach((marker) => {
+            markerBounds.extend([marker.lat, marker.lon]);
+        });
+        markerBounds.isValid() && map.fitBounds(markerBounds);
+
+        return null;
+    }
 
     return (
         <>
             <MapContainer
-                center={[42.3880067, 18.9255706]}
+                center={homes[0] ?? DEFAULT_CENTER}
                 zoom={10}
                 scrollWheelZoom={true}
                 style={{ height: 750, width: "100%" }}
             >
+                <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
