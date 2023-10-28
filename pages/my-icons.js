@@ -1,6 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import the icons you need
-import { faHouse, faTree, fa1, fa2, faLocationPin } from "@fortawesome/free-solid-svg-icons";
+import {
+    fa1,
+    fa2,
+    fa5,
+    fa9,
+    faAmbulance,
+    faCircle,
+    faCoffee,
+    faHouse,
+    faLocationPin,
+    faTree,
+} from "@fortawesome/free-solid-svg-icons";
 
 import DecoratedLocationPin from "./decorated-location-pin";
 
