@@ -108,7 +108,7 @@ export default function CountrySelector({ selected, setSelected }) {
             <Button onClick={saveSelected}>{t("Save")}</Button>
             <Upload accept=".json" showUploadList={false} beforeUpload={loadSelected}>
                 <Button>
-                    <Icon type="upload" />
+                    {/* <Icon type="upload" /> TODO: Fix me */}
                     {t("Load")}
                 </Button>
             </Upload>

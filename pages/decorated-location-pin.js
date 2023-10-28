@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import the icons you need
 import { fa0, fa1, fa2, fa3, fa4, fa5, fa6, fa7, fa8, fa9, faLocationPin } from "@fortawesome/free-solid-svg-icons";
 
-export default function DecoratedLocationPin({ icon, number }) {
+const DecoratedLocationPin = ({ icon, number }) => {
     const getFaDigitIconName = (digit) => {
         switch (digit) {
             case 0:
@@ -61,4 +61,6 @@ export default function DecoratedLocationPin({ icon, number }) {
             </span>
         </div>
     );
-}
+};
+
+export default DecoratedLocationPin;

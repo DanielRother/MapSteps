@@ -1,7 +1,7 @@
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 
-export default function Mapbox({ locale }) {
+const Mapbox = ({ locale }) => {
     const { t } = useTranslation();
 
     const Travel = dynamic(
@@ -9,4 +9,6 @@ export default function Mapbox({ locale }) {
         { loading: () => <p>A map is loading</p>, ssr: false }, // This line is important. It's what prevents server-side render
     );
     return <Travel />;
-}
+};
+
+export default Mapbox;

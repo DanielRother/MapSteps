@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
-import L, { LatLng, latLngBounds, FeatureGroup } from "leaflet";
+// import React from "react";
+import { latLngBounds } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
@@ -36,14 +36,14 @@ const Map = ({ homes, pois, routes }) => {
                 scrollWheelZoom={true}
                 style={{ height: 750, width: "100%" }}
             >
-                {/* Filename could be usefull */}
+                {/* Filename could be usefull
                 <MapPrint
                     position="topleft"
                     sizeModes={["Current", "A4Portrait", "A4Landscape"]}
                     hideControlContainer={true}
                     title="Export as PNG"
                     exportOnly
-                />
+                /> */}
 
                 <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
 

@@ -5,7 +5,7 @@ import CountrySelector from "./country-selector";
 import CountryStatistic from "./country-statistic";
 import ScratchMapImage from "./scratch-map-image";
 
-export default function ScratchMapApp() {
+const ScratchMapApp = () => {
     const [selected, setSelected] = useState([]);
 
     const { t } = useTranslation();
@@ -17,4 +17,6 @@ export default function ScratchMapApp() {
             <ScratchMapImage selected={selected} />
         </>
     );
-}
+};
+
+export default ScratchMapApp;
