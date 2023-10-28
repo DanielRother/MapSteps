@@ -1,5 +1,6 @@
+import React, { useRef, useEffect, useState } from "react";
 import L, { LatLng, latLngBounds, FeatureGroup } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 
@@ -10,6 +11,8 @@ const Map = ({ homes, pois, routes }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
+    // Zoom on map
+    // TODO: On reload the first HOME is centered...
     function ChangeView({ center, markers }) {
         const map = useMap();
         map.setView({ lng: center.lon, lat: center.lat }, DEFAULT_ZOOM);
@@ -22,6 +25,8 @@ const Map = ({ homes, pois, routes }) => {
 
         return null;
     }
+
+    // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
 
     return (
         <>
@@ -41,10 +46,22 @@ const Map = ({ homes, pois, routes }) => {
                 />
 
                 <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+
+                <LayersControl position="topright">
+                    <LayersControl.BaseLayer checked name="OSM">
+                        <TileLayer
+                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                    </LayersControl.BaseLayer>
+                    {/* <TileLayer ref={ref} url={tileProvider.url} attribution={tileProvider.attribution} /> */}
+                    <LayersControl.BaseLayer name="Mapbox">
+                        <TileLayer
+                            attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+                            url={`https://api.mapbox.com/styles/v1/${process.env.NEXT_PUBLIC_MAPBOX_USERNAME}/${process.env.NEXT_PUBLIC_MAPBOX_STYLE_ID}/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}`}
+                        />
+                    </LayersControl.BaseLayer>
+                </LayersControl>
 
                 {routes.map((r) => (
                     <RoutingMachine waypoints={r.waypoints} linecolor={r.color} />
