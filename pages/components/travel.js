@@ -3,7 +3,7 @@ import { Tree } from "antd";
 const { TreeNode } = Tree;
 import { faHouse, faRoad, faQuestion, faMapMarkedAlt } from "@fortawesome/free-solid-svg-icons";
 import { DecoratedCircle } from "../../utils/decorated-fa-icons";
-
+import { DownOutlined } from "@ant-design/icons";
 import Map from "./map";
 
 const Travel = () => {
@@ -48,6 +48,8 @@ const Travel = () => {
                 defaultCheckedKeys={["0-0"]}
                 defaultExpandedKeys={["0-0"]}
                 showIcon
+                showLine
+                switcherIcon={<DownOutlined />}
             >
                 {renderTreeNodes([hierarchy])}
             </Tree>
