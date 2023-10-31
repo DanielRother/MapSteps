@@ -13,7 +13,7 @@ import {
     faTree,
 } from "@fortawesome/free-solid-svg-icons";
 
-import DecoratedLocationPin from "./decorated-location-pin";
+import { DecoratedLocationPin } from "../utils/decorated-fa-icons";
 
 export default function MyIcons() {
     var icons = [];

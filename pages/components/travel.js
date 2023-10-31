@@ -1,22 +1,42 @@
-import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { Tree } from "antd";
 const { TreeNode } = Tree;
+import { faHouse, faRoad, faQuestion, faMapMarkedAlt } from "@fortawesome/free-solid-svg-icons";
+import { DecoratedCircle } from "../../utils/decorated-fa-icons";
 
 import Map from "./map";
 
 const Travel = () => {
     const TreeComponent = ({ hierarchy }) => {
+        let poiNumber = 1; // TODO: Use some kind of rank property in the JSON struct
         const renderTreeNodes = (data) =>
             data.map((item) => {
+                let icon;
+                switch (item.type) {
+                    case "Home":
+                        icon = <DecoratedCircle icon={faHouse} color={item.color} />;
+                        break;
+                    case "POI":
+                        icon = <DecoratedCircle number={poiNumber++} color={item.color} />;
+                        break;
+                    case "Routing":
+                        icon = <DecoratedCircle icon={faRoad} color={item.color} />;
+                        break;
+                    case "Stage":
+                        icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
+                        break;
+                    default:
+                        icon = <DecoratedCircle icon={faQuestion} color={item.color} />;
+                        break;
+                }
                 if (item.steps) {
                     return (
-                        <TreeNode title={item.name} key={item.key} dataRef={item}>
+                        <TreeNode title={item.name} key={item.key} dataRef={item} icon={icon}>
                             {renderTreeNodes(item.steps)}
                         </TreeNode>
                     );
                 }
-                return <TreeNode title={item.name} key={item.key} dataRef={item} {...item} />;
+                return <TreeNode title={item.name} key={item.key} dataRef={item} show icon={icon} {...item} />;
             });
 
         // TODO: Determine the checked and expaned key dynamically
@@ -27,6 +47,7 @@ const Travel = () => {
                 checkable
                 defaultCheckedKeys={["0-0"]}
                 defaultExpandedKeys={["0-0"]}
+                showIcon
             >
                 {renderTreeNodes([hierarchy])}
             </Tree>
@@ -580,9 +601,9 @@ const Travel = () => {
     };
 
     // TODO: Improve the loading once the data is really received from somewhere...
-    const [homes, setHomes] = useState(getPlaces(elternzeitPois, "Home"));
-    const [pois, setPois] = useState(getPlaces(elternzeitPois, "POI"));
-    const [routes, setRoutes] = useState(getRoutes(elternzeitPois));
+    const [homes, setHomes] = useState(getPlaces(mnePois, "Home"));
+    const [pois, setPois] = useState(getPlaces(mnePois, "POI"));
+    const [routes, setRoutes] = useState(getRoutes(mnePois));
 
     function setTrip(name) {
         const trip = trips[name];

@@ -1,6 +1,6 @@
-import { Button, Icon, Select, Space, Tag, Upload } from "antd";
+import { Button, Select, Space, Tag, Upload } from "antd";
 import { useTranslation } from "next-i18next";
-import { groupBy, getAllCountriesData } from "../../utils/utils.js";
+import { groupBy, getAllCountriesData } from "../../utils/map-utils.js";
 
 const { Option, OptGroup } = Select;
 

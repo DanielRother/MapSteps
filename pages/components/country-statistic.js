@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Row, Statistic } from "antd";
 import { useTranslation } from "next-i18next";
-import { groupBy, getAllCountriesData } from "../../utils/utils.js";
+import { groupBy, getAllCountriesData } from "../../utils/map-utils.js";
 
 export default function CountryStatistic({ selected }) {
     const { t } = useTranslation();

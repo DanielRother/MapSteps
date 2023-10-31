@@ -27,7 +27,6 @@ const Map = ({ homes, pois, routes }) => {
     }
 
     // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
-
     return (
         <>
             <MapContainer
@@ -37,13 +36,14 @@ const Map = ({ homes, pois, routes }) => {
                 style={{ height: 750, width: "100%" }}
             >
                 {/* Filename could be usefull
+                TODO: Currently not working to due multiple tile layer */}
                 <MapPrint
                     position="topleft"
                     sizeModes={["Current", "A4Portrait", "A4Landscape"]}
                     hideControlContainer={true}
                     title="Export as PNG"
                     exportOnly
-                /> */}
+                />
 
                 <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
 
