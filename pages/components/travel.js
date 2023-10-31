@@ -1,9 +1,45 @@
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
+import { Tree } from "antd";
+const { TreeNode } = Tree;
 
 import Map from "./map";
 
 const Travel = () => {
+    const TreeComponent = ({ hierarchy }) => {
+        const renderTreeNodes = (data) =>
+            data.map((item) => {
+                if (item.steps) {
+                    return (
+                        <TreeNode title={item.name} key={item.key} dataRef={item}>
+                            {renderTreeNodes(item.steps)}
+                        </TreeNode>
+                    );
+                }
+                return <TreeNode title={item.name} key={item.key} dataRef={item} {...item} />;
+            });
+
+        // TODO: Determine the checked and expaned key dynamically
+        return (
+            <Tree
+                onSelect={onSelect}
+                onCheck={onCheck}
+                checkable
+                defaultCheckedKeys={["0-0"]}
+                defaultExpandedKeys={["0-0"]}
+            >
+                {renderTreeNodes([hierarchy])}
+            </Tree>
+        );
+    };
+
+    const onSelect = (selectedKeys, info) => {
+        console.log("selected", selectedKeys, info);
+    };
+    const onCheck = (checkedKeys, info) => {
+        console.log("onCheck", checkedKeys, info);
+    };
+
     const getPlaces = (data, type) => {
         // console.log(data);
         // console.log("Get places of type " + type + " for " + data.name);
@@ -63,13 +99,15 @@ const Travel = () => {
         return routes;
     };
 
-    let newMnePois = {
+    let mnePois = {
+        id: 1,
         name: "Montenegro",
         color: "#3867d6",
         type: "Stage",
         useForRouting: false,
         steps: [
             {
+                id: 2,
                 name: "Grenze HRV -> MNE",
                 address: "",
                 lat: 42.4869138,
@@ -78,6 +116,7 @@ const Travel = () => {
                 type: "Routing",
             },
             {
+                id: 3,
                 name: "Perast",
                 address: "",
                 lat: 42.4862681,
@@ -86,6 +125,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 4,
                 name: "Unterkunft Budva",
                 address: "",
                 lat: 42.3069694,
@@ -94,6 +134,7 @@ const Travel = () => {
                 type: "Home",
                 steps: [
                     {
+                        id: 5,
                         name: "Tag 1",
                         address: "",
                         lat: 42.3069694,
@@ -103,6 +144,7 @@ const Travel = () => {
                         useForRouting: true,
                         steps: [
                             {
+                                id: 6,
                                 name: "Kotor",
                                 address: "",
                                 lat: 42.4248525,
@@ -111,6 +153,7 @@ const Travel = () => {
                                 type: "POI",
                             },
                             {
+                                id: 7,
                                 name: "Jazz Beach",
                                 address: "",
                                 lat: 42.28394,
@@ -121,6 +164,7 @@ const Travel = () => {
                         ],
                     },
                     {
+                        id: 8,
                         name: "Tag 2",
                         address: "",
                         lat: 42.3069694,
@@ -130,6 +174,7 @@ const Travel = () => {
                         useForRouting: true,
                         steps: [
                             {
+                                id: 9,
                                 name: "NP Lovćen",
                                 address: "",
                                 lat: 42.39992,
@@ -138,6 +183,7 @@ const Travel = () => {
                                 type: "POI",
                             },
                             {
+                                id: 10,
                                 name: "Cetinje",
                                 address: "",
                                 lat: 42.3880067,
@@ -148,6 +194,7 @@ const Travel = () => {
                         ],
                     },
                     {
+                        id: 11,
                         name: "Tag 3",
                         address: "",
                         lat: 42.3069694,
@@ -157,6 +204,7 @@ const Travel = () => {
                         useForRouting: true,
                         steps: [
                             {
+                                id: 12,
                                 name: "Budva",
                                 address: "",
                                 lat: 42.2778986,
@@ -167,6 +215,7 @@ const Travel = () => {
                         ],
                     },
                     {
+                        id: 13,
                         name: "Tag 4",
                         address: "",
                         lat: 42.3069694,
@@ -176,6 +225,7 @@ const Travel = () => {
                         useForRouting: true,
                         steps: [
                             {
+                                id: 21,
                                 name: "NP Skutarisee",
                                 address: "",
                                 lat: 42.2465056,
@@ -188,6 +238,7 @@ const Travel = () => {
                 ],
             },
             {
+                id: 14,
                 name: "Kloster Ostrog",
                 address: "",
                 lat: 42.6747602,
@@ -196,6 +247,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 15,
                 name: "Unterkunft Nikšić",
                 address: "",
                 lat: 42.806415,
@@ -204,6 +256,7 @@ const Travel = () => {
                 type: "Home",
                 steps: [
                     {
+                        id: 16,
                         name: "Tag 5",
                         address: "",
                         lat: 42.806415,
@@ -213,6 +266,7 @@ const Travel = () => {
                         useForRouting: true,
                         steps: [
                             {
+                                id: 17,
                                 name: "Crno Jezero",
                                 address: "",
                                 lat: 43.1453521,
@@ -221,6 +275,7 @@ const Travel = () => {
                                 type: "POI",
                             },
                             {
+                                id: 18,
                                 name: "Đurđevića-Tara-Brücke",
                                 address: "",
                                 lat: 43.150201,
@@ -233,6 +288,7 @@ const Travel = () => {
                 ],
             },
             {
+                id: 19,
                 name: "Slano Jezero",
                 address: "",
                 lat: 42.7570642,
@@ -241,6 +297,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 20,
                 name: "Grenze MNE -> BIH",
                 address: "",
                 lat: 42.8580652,
@@ -519,7 +576,7 @@ const Travel = () => {
 
     const trips = {
         elternzeit: elternzeitPois,
-        mne: newMnePois,
+        mne: mnePois,
     };
 
     // TODO: Improve the loading once the data is really received from somewhere...
@@ -535,111 +592,10 @@ const Travel = () => {
         setRoutes(getRoutes(trip));
     }
 
-    let oldMnePois = {
-        name: "l",
-        homes: [
-            {
-                name: "Unterkunft Budva",
-                address: "",
-                lat: 42.3069694,
-                lon: 18.7984001,
-                color: "#fed330",
-            },
-            {
-                name: "Unterkunft Nikšić",
-                address: "",
-                lat: 42.806415,
-                lon: 18.899258,
-                color: "#fed330",
-            },
-        ],
-        pois: [
-            {
-                name: "Perast",
-                address: "",
-                lat: 42.4862681,
-                lon: 18.6988592,
-                color: "#20bf6b",
-            },
-            {
-                name: "Kotor",
-                address: "",
-                lat: 42.4248525,
-                lon: 18.7695775,
-                color: "#20bf6b",
-            },
-            {
-                name: "Jazz Beach",
-                address: "",
-                lat: 42.28394,
-                lon: 18.8024847,
-                color: "#20bf6b",
-            },
-            {
-                name: "NP Lovćen",
-                address: "",
-                lat: 42.39992,
-                lon: 18.8375047,
-                color: "#20bf6b",
-            },
-            {
-                name: "Cetinje",
-                address: "",
-                lat: 42.3880067,
-                lon: 18.9255706,
-                color: "#20bf6b",
-            },
-            {
-                name: "Budva",
-                address: "",
-                lat: 42.2778986,
-                lon: 18.8376308,
-                color: "#20bf6b",
-            },
-            {
-                name: "NP Skutarisee",
-                address: "",
-                lat: 42.2465056,
-                lon: 19.0920378,
-                color: "#20bf6b",
-            },
-            {
-                name: "Kloster Ostrog",
-                address: "",
-                lat: 42.6747602,
-                lon: 19.0279901,
-                color: "#20bf6b",
-            },
-            {
-                name: "Crno Jezero",
-                address: "",
-                lat: 43.1453521,
-                lon: 19.0856592,
-                color: "#20bf6b",
-            },
-            {
-                name: "Đurđevića-Tara-Brücke",
-                address: "",
-                lat: 43.150201,
-                lon: 19.2900385,
-                color: "#20bf6b",
-            },
-            {
-                name: "Slano Jezero",
-                address: "",
-                lat: 42.7570642,
-                lon: 18.8214578,
-                color: "#20bf6b",
-            },
-        ],
-    };
-    let oldHomes = oldMnePois.homes;
-    let oldPois = oldMnePois.pois;
-    // console.log(oldPois);
-
     return (
         <>
             <p>Example Map</p>
+            <TreeComponent hierarchy={trips.mne} />
             <Map homes={homes} pois={pois} routes={routes} />
             {Object.keys(trips).map((tripname) => (
                 <button
