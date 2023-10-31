@@ -1,4 +1,5 @@
 // import React from "react";
+import L from "leaflet";
 import { latLngBounds } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -13,25 +14,28 @@ const Map = ({ homes, pois, routes }) => {
 
     // Zoom on map
     // TODO: On reload the first HOME is centered...
-    function ChangeView({ center, markers }) {
+    function ChangeView({ markers }) {
+        console.log("markers changeview", markers);
         const map = useMap();
-        map.setView({ lng: center.lon, lat: center.lat }, DEFAULT_ZOOM);
 
         let markerBounds = latLngBounds([]);
         markers.forEach((marker) => {
             markerBounds.extend([marker.lat, marker.lon]);
         });
+
         markerBounds.isValid() && map.fitBounds(markerBounds);
 
         return null;
     }
+
+    const markers = [...homes, ...pois];
 
     // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
     return (
         <>
             <MapContainer
                 center={homes[0] ?? DEFAULT_CENTER}
-                zoom={10}
+                zoom={DEFAULT_ZOOM}
                 scrollWheelZoom={true}
                 style={{ height: 750, width: "100%" }}
             >
@@ -45,7 +49,7 @@ const Map = ({ homes, pois, routes }) => {
                     exportOnly
                 />
 
-                <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={pois} />
+                <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={markers} />
 
                 <LayersControl position="topright">
                     <LayersControl.BaseLayer checked name="OSM">
