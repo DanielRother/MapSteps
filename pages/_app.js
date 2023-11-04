@@ -1,5 +1,5 @@
 import { appWithTranslation } from "next-i18next";
-import Header from "./components/header";
+import Header from "../components/page/header";
 import "../styles/globals.css";
 import "leaflet/dist/leaflet.css";
 

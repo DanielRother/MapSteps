@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import ScratchMapApp from "./components/scratch-map-app";
+import ScratchMapApp from "../components/scratch/scratch-map-app";
 
 export default function Main({ locale }) {
     const { t } = useTranslation();

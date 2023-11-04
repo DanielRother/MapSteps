@@ -6,10 +6,10 @@ import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 import { Statistic } from "antd";
 
-import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
+import { AwesomeIconToMarker, SvgMarker } from "./marker";
 import MapPrint from "./map-print";
 
-const Map = ({ markers, routes }) => {
+const PoiMap = ({ markers, routes }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
@@ -27,7 +27,7 @@ const Map = ({ markers, routes }) => {
         return null;
     }
 
-    function GetIcon(marker, index) {
+    function getIcon(marker, index) {
         switch (marker.type) {
             case "Home":
                 return AwesomeIconToMarker({ iconName: "location-pin-house", color: marker.color });
@@ -137,4 +137,4 @@ const Map = ({ markers, routes }) => {
     );
 };
 
-export default Map;
+export default PoiMap;

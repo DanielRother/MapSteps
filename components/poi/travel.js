@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Tree } from "antd";
-const { TreeNode } = Tree;
-import { faHouse, faRoad, faQuestion, faMapMarkedAlt } from "@fortawesome/free-solid-svg-icons";
-import { DecoratedCircle } from "../../utils/decorated-fa-icons";
-import { DownOutlined } from "@ant-design/icons";
-import Map from "./map";
+import React, { useState } from "react";
+
+import PoiMap from "./poi-map";
+import PoiTree from "./poi-tree";
+import { getPlaces, getRoutes } from "../../utils/map-utils";
 
 const Travel = () => {
     let mnePois = {
@@ -508,181 +506,12 @@ const Travel = () => {
         mne: mnePois,
     };
 
-    const getPlaces = (data, type) => {
-        if (Object.keys(data).length === 0) {
-            return [];
-        }
-        let places = [];
-
-        if (data.type === type) {
-            places.push(data);
-        }
-
-        data.steps.forEach((step) => {
-            if (step.type === type) {
-                places.push(step);
-            }
-
-            if (step.hasOwnProperty("steps")) {
-                step.steps.forEach((child) => {
-                    let childrenPlaces = getPlaces(child, type);
-                    places = places.concat(childrenPlaces);
-                });
-            }
-        });
-
-        return places;
-    };
-
-    const getRoutes = (data) => {
-        if (Object.keys(data).length === 0) {
-            return [];
-        }
-
-        let stages = getPlaces(data, "Stage");
-
-        let routes = [];
-        stages.forEach((stage) => {
-            let waypoints = [];
-            let color = "#eb3b5a";
-            // let color = "#fa8231";
-            stage.steps.forEach((step) => {
-                waypoints.push(step);
-            });
-
-            if (stage.useForRouting) {
-                color = "#eb3b5a";
-                waypoints.unshift(stage);
-                waypoints.push(stage);
-            }
-
-            let route = {
-                waypoints: waypoints,
-                color: color,
-            };
-
-            routes.push(route);
-        });
-
-        return routes;
-    };
-
     // TODO: Improve the loading once the data is really received from somewhere...
     const [hierarchy, setHierarchy] = useState(trips.mne);
     const homes = getPlaces(hierarchy, "Home");
     const pois = getPlaces(hierarchy, "POI");
     const markers = [...homes, ...pois];
     const routes = getRoutes(hierarchy);
-
-    // TODO: really required?
-    let checkedKeys = [];
-    const [expandedKeys, setExpandedKey] = useState([]);
-
-    const TreeComponent = ({ hierarchy }) => {
-        if (Object.keys(hierarchy).length === 0) {
-            return;
-        }
-
-        let poiNumber = 1; // TODO: Use some kind of rank property in the JSON struct
-        const renderTreeNodes = (data) =>
-            data.map((item) => {
-                let icon;
-                switch (item.type) {
-                    case "Home":
-                        icon = <DecoratedCircle icon={faHouse} color={item.color} />;
-                        break;
-                    case "POI":
-                        icon = <DecoratedCircle number={poiNumber++} color={item.color} />;
-                        break;
-                    case "Routing":
-                        icon = <DecoratedCircle icon={faRoad} color={item.color} />;
-                        break;
-                    case "Stage":
-                        icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
-                        break;
-                    default:
-                        icon = <DecoratedCircle icon={faQuestion} color={item.color} />;
-                        break;
-                }
-                if (item.steps) {
-                    return (
-                        <TreeNode title={item.name} dataRef={item} icon={icon} key={item.id.toString()}>
-                            {renderTreeNodes(item.steps)}
-                        </TreeNode>
-                    );
-                }
-                // Only add leaf nodes to the list. Parents will be calculated automatically
-                if (item.enabled) {
-                    checkedKeys.push(item.id.toString());
-                }
-                return (
-                    <TreeNode title={item.name} dataRef={item} show icon={icon} key={item.id.toString()} {...item} />
-                );
-            });
-
-        return (
-            <Tree
-                onSelect={onSelect}
-                onCheck={(checkedKeys, info) => {
-                    onCheck(checkedKeys, info);
-                }}
-                onExpand={onExpand}
-                checkable
-                defaultCheckedKeys={checkedKeys}
-                defaultExpandedKeys={expandedKeys}
-                showIcon
-                showLine
-                switcherIcon={<DownOutlined />}
-            >
-                {renderTreeNodes([hierarchy])}
-            </Tree>
-        );
-    };
-
-    const onSelect = (selectedKeys, info) => {
-        console.log("selected", selectedKeys, info);
-    };
-
-    const onExpand = (expandedKeys) => {
-        console.log("expanded", expandedKeys);
-        setExpandedKey(expandedKeys);
-    };
-
-    function onCheck(checkedKeys, info) {
-        console.log("onCheck", checkedKeys, info);
-        const dataRef = info.node.dataRef;
-
-        function setEnableToChildren(tree, enabled) {
-            tree.enabled = enabled;
-            if (tree.hasOwnProperty("steps")) {
-                tree.steps.forEach((step) => {
-                    step = setEnableToChildren(step, enabled);
-                });
-            }
-
-            return tree;
-        }
-
-        function replaceObjectById(tree, id, replacement) {
-            if (tree.id === id) {
-                return replacement;
-            }
-
-            for (const key in tree) {
-                if (typeof tree[key] === "object") {
-                    tree[key] = replaceObjectById(tree[key], id, replacement);
-                }
-            }
-
-            return tree;
-        }
-
-        let newPoi = setEnableToChildren({ ...dataRef }, info.checked);
-        let newHierarchy = replaceObjectById({ ...hierarchy }, dataRef.id, newPoi);
-        // console.log("newH", newHierarchy);
-        setHierarchy(newHierarchy);
-    }
-
     function setTrip(name) {
         const trip = trips[name];
         setHierarchy(trip);
@@ -691,9 +520,8 @@ const Travel = () => {
     return (
         <>
             <p>Example Map</p>
-            <TreeComponent hierarchy={hierarchy} />
-            {/* <Map homes={homes} pois={pois} routes={routes} /> */}
-            <Map markers={markers} routes={routes} />
+            <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
+            <PoiMap markers={markers} routes={routes} />
             {Object.keys(trips).map((tripname) => (
                 <button
                     onClick={() => {

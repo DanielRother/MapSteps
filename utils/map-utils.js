@@ -42,3 +42,62 @@ export function getAllCountriesData() {
 
     return allCountriesData;
 }
+
+export function getPlaces(data, type) {
+    if (Object.keys(data).length === 0) {
+        return [];
+    }
+    let places = [];
+
+    if (data.type === type) {
+        places.push(data);
+    }
+
+    data.steps.forEach((step) => {
+        if (step.type === type) {
+            places.push(step);
+        }
+
+        if (step.hasOwnProperty("steps")) {
+            step.steps.forEach((child) => {
+                let childrenPlaces = getPlaces(child, type);
+                places = places.concat(childrenPlaces);
+            });
+        }
+    });
+
+    return places;
+}
+
+export function getRoutes(data) {
+    if (Object.keys(data).length === 0) {
+        return [];
+    }
+
+    let stages = getPlaces(data, "Stage");
+
+    let routes = [];
+    stages.forEach((stage) => {
+        let waypoints = [];
+        let color = "#eb3b5a";
+        // let color = "#fa8231";
+        stage.steps.forEach((step) => {
+            waypoints.push(step);
+        });
+
+        if (stage.useForRouting) {
+            color = "#eb3b5a";
+            waypoints.unshift(stage);
+            waypoints.push(stage);
+        }
+
+        let route = {
+            waypoints: waypoints,
+            color: color,
+        };
+
+        routes.push(route);
+    });
+
+    return routes;
+}
