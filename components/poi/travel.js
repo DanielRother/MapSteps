@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Row, Col } from "antd";
 
 import PoiMap from "./poi-map";
 import PoiTree from "./poi-tree";
@@ -519,18 +520,28 @@ const Travel = () => {
 
     return (
         <>
-            <p>Example Map</p>
-            <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
-            <PoiMap markers={markers} routes={routes} />
-            {Object.keys(trips).map((tripname) => (
-                <button
-                    onClick={() => {
-                        setTrip(tripname);
-                    }}
-                >
-                    {tripname}
-                </button>
-            ))}
+            <Row>
+                <p>Example Map</p>
+            </Row>
+            <Row>
+                {Object.keys(trips).map((tripname) => (
+                    <button
+                        onClick={() => {
+                            setTrip(tripname);
+                        }}
+                    >
+                        {tripname}
+                    </button>
+                ))}
+            </Row>
+            <Row>
+                <Col span={6} style={{ overflow: "auto", maxHeight: 700 }}>
+                    <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
+                </Col>
+                <Col span={18}>
+                    <PoiMap markers={markers} routes={routes[0]} />
+                </Col>
+            </Row>
         </>
     );
 };
