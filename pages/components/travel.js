@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tree } from "antd";
 const { TreeNode } = Tree;
 import { faHouse, faRoad, faQuestion, faMapMarkedAlt } from "@fortawesome/free-solid-svg-icons";
@@ -7,127 +7,13 @@ import { DownOutlined } from "@ant-design/icons";
 import Map from "./map";
 
 const Travel = () => {
-    const TreeComponent = ({ hierarchy }) => {
-        let poiNumber = 1; // TODO: Use some kind of rank property in the JSON struct
-        const renderTreeNodes = (data) =>
-            data.map((item) => {
-                let icon;
-                switch (item.type) {
-                    case "Home":
-                        icon = <DecoratedCircle icon={faHouse} color={item.color} />;
-                        break;
-                    case "POI":
-                        icon = <DecoratedCircle number={poiNumber++} color={item.color} />;
-                        break;
-                    case "Routing":
-                        icon = <DecoratedCircle icon={faRoad} color={item.color} />;
-                        break;
-                    case "Stage":
-                        icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
-                        break;
-                    default:
-                        icon = <DecoratedCircle icon={faQuestion} color={item.color} />;
-                        break;
-                }
-                if (item.steps) {
-                    return (
-                        <TreeNode title={item.name} key={item.key} dataRef={item} icon={icon}>
-                            {renderTreeNodes(item.steps)}
-                        </TreeNode>
-                    );
-                }
-                return <TreeNode title={item.name} key={item.key} dataRef={item} show icon={icon} {...item} />;
-            });
-
-        // TODO: Determine the checked and expaned key dynamically
-        return (
-            <Tree
-                onSelect={onSelect}
-                onCheck={onCheck}
-                checkable
-                defaultCheckedKeys={["0-0"]}
-                defaultExpandedKeys={["0-0"]}
-                showIcon
-                showLine
-                switcherIcon={<DownOutlined />}
-            >
-                {renderTreeNodes([hierarchy])}
-            </Tree>
-        );
-    };
-
-    const onSelect = (selectedKeys, info) => {
-        console.log("selected", selectedKeys, info);
-    };
-    const onCheck = (checkedKeys, info) => {
-        console.log("onCheck", checkedKeys, info);
-    };
-
-    const getPlaces = (data, type) => {
-        // console.log(data);
-        // console.log("Get places of type " + type + " for " + data.name);
-        let places = [];
-
-        if (data.type === type) {
-            places.push(data);
-        }
-
-        data.steps.forEach((step) => {
-            // console.log(step.name);
-            if (step.type === type) {
-                places.push(step);
-            }
-
-            if (step.hasOwnProperty("steps")) {
-                // console.log("check children");
-                // console.log(step.hasOwnProperty("steps"));
-                // console.log(step.steps);
-
-                step.steps.forEach((child) => {
-                    let childrenPlaces = getPlaces(child, type);
-                    places = places.concat(childrenPlaces);
-                });
-            }
-        });
-
-        return places;
-    };
-
-    const getRoutes = (data) => {
-        let stages = getPlaces(data, "Stage");
-
-        let routes = [];
-        stages.forEach((stage) => {
-            let waypoints = [];
-            let color = "#eb3b5a";
-            // let color = "#fa8231";
-            stage.steps.forEach((step) => {
-                waypoints.push(step);
-            });
-
-            if (stage.useForRouting) {
-                color = "#eb3b5a";
-                waypoints.unshift(stage);
-                waypoints.push(stage);
-            }
-
-            let route = {
-                waypoints: waypoints,
-                color: color,
-            };
-
-            routes.push(route);
-        });
-
-        return routes;
-    };
-
     let mnePois = {
         id: 1,
         name: "Montenegro",
         color: "#3867d6",
         type: "Stage",
         useForRouting: false,
+        enabled: true,
         steps: [
             {
                 id: 2,
@@ -137,6 +23,7 @@ const Travel = () => {
                 lon: 18.4352239,
                 color: "#a5b1c2",
                 type: "Routing",
+                enabled: true,
             },
             {
                 id: 3,
@@ -146,6 +33,7 @@ const Travel = () => {
                 lon: 18.6988592,
                 color: "#20bf6b",
                 type: "POI",
+                enabled: false,
             },
             {
                 id: 4,
@@ -155,6 +43,7 @@ const Travel = () => {
                 lon: 18.7984001,
                 color: "#fed330",
                 type: "Home",
+                enabled: true,
                 steps: [
                     {
                         id: 5,
@@ -165,6 +54,7 @@ const Travel = () => {
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: true,
+                        enabled: true,
                         steps: [
                             {
                                 id: 6,
@@ -174,6 +64,7 @@ const Travel = () => {
                                 lon: 18.7695775,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                             {
                                 id: 7,
@@ -183,6 +74,7 @@ const Travel = () => {
                                 lon: 18.8024847,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                         ],
                     },
@@ -195,6 +87,7 @@ const Travel = () => {
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: true,
+                        enabled: true,
                         steps: [
                             {
                                 id: 9,
@@ -204,6 +97,7 @@ const Travel = () => {
                                 lon: 18.8375047,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: false,
                             },
                             {
                                 id: 10,
@@ -213,6 +107,7 @@ const Travel = () => {
                                 lon: 18.9255706,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                         ],
                     },
@@ -225,6 +120,7 @@ const Travel = () => {
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: true,
+                        enabled: true,
                         steps: [
                             {
                                 id: 12,
@@ -234,6 +130,7 @@ const Travel = () => {
                                 lon: 18.8376308,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                         ],
                     },
@@ -246,6 +143,7 @@ const Travel = () => {
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: true,
+                        enabled: true,
                         steps: [
                             {
                                 id: 21,
@@ -255,6 +153,7 @@ const Travel = () => {
                                 lon: 19.0920378,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                         ],
                     },
@@ -268,6 +167,7 @@ const Travel = () => {
                 lon: 19.0279901,
                 color: "#20bf6b",
                 type: "POI",
+                enabled: true,
             },
             {
                 id: 15,
@@ -277,6 +177,7 @@ const Travel = () => {
                 lon: 18.899258,
                 color: "#fed330",
                 type: "Home",
+                enabled: true,
                 steps: [
                     {
                         id: 16,
@@ -287,6 +188,7 @@ const Travel = () => {
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: true,
+                        enabled: true,
                         steps: [
                             {
                                 id: 17,
@@ -296,6 +198,7 @@ const Travel = () => {
                                 lon: 19.0856592,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                             {
                                 id: 18,
@@ -305,6 +208,7 @@ const Travel = () => {
                                 lon: 19.2900385,
                                 color: "#20bf6b",
                                 type: "POI",
+                                enabled: true,
                             },
                         ],
                     },
@@ -318,6 +222,7 @@ const Travel = () => {
                 lon: 18.8214578,
                 color: "#20bf6b",
                 type: "POI",
+                enabled: true,
             },
             {
                 id: 20,
@@ -327,6 +232,7 @@ const Travel = () => {
                 lon: 18.4562098,
                 color: "#a5b1c2",
                 type: "Routing",
+                enabled: true,
             },
         ],
     };
@@ -602,23 +508,173 @@ const Travel = () => {
         mne: mnePois,
     };
 
+    const getPlaces = (data, type) => {
+        if (Object.keys(data).length === 0) {
+            return [];
+        }
+        let places = [];
+
+        if (data.type === type) {
+            places.push(data);
+        }
+
+        data.steps.forEach((step) => {
+            if (step.type === type) {
+                places.push(step);
+            }
+
+            if (step.hasOwnProperty("steps")) {
+                step.steps.forEach((child) => {
+                    let childrenPlaces = getPlaces(child, type);
+                    places = places.concat(childrenPlaces);
+                });
+            }
+        });
+
+        return places;
+    };
+
+    const getRoutes = (data) => {
+        if (Object.keys(data).length === 0) {
+            return [];
+        }
+
+        let stages = getPlaces(data, "Stage");
+
+        let routes = [];
+        stages.forEach((stage) => {
+            let waypoints = [];
+            let color = "#eb3b5a";
+            // let color = "#fa8231";
+            stage.steps.forEach((step) => {
+                waypoints.push(step);
+            });
+
+            if (stage.useForRouting) {
+                color = "#eb3b5a";
+                waypoints.unshift(stage);
+                waypoints.push(stage);
+            }
+
+            let route = {
+                waypoints: waypoints,
+                color: color,
+            };
+
+            routes.push(route);
+        });
+
+        return routes;
+    };
+
     // TODO: Improve the loading once the data is really received from somewhere...
-    const [homes, setHomes] = useState(getPlaces(mnePois, "Home"));
-    const [pois, setPois] = useState(getPlaces(mnePois, "POI"));
-    const [routes, setRoutes] = useState(getRoutes(mnePois));
+    const [hierarchy, setHierarchy] = useState(trips.mne);
+    const homes = getPlaces(hierarchy, "Home");
+    const pois = getPlaces(hierarchy, "POI");
+    const routes = getRoutes(hierarchy);
+
+    // TODO: really required?
+    let checkedKeys = [];
+
+    const TreeComponent = ({ hierarchy }) => {
+        if (Object.keys(hierarchy).length === 0) {
+            return;
+        }
+
+        let poiNumber = 1; // TODO: Use some kind of rank property in the JSON struct
+        const renderTreeNodes = (data) =>
+            data.map((item) => {
+                let icon;
+                switch (item.type) {
+                    case "Home":
+                        icon = <DecoratedCircle icon={faHouse} color={item.color} />;
+                        break;
+                    case "POI":
+                        icon = <DecoratedCircle number={poiNumber++} color={item.color} />;
+                        break;
+                    case "Routing":
+                        icon = <DecoratedCircle icon={faRoad} color={item.color} />;
+                        break;
+                    case "Stage":
+                        icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
+                        break;
+                    default:
+                        icon = <DecoratedCircle icon={faQuestion} color={item.color} />;
+                        break;
+                }
+                if (item.steps) {
+                    return (
+                        <TreeNode title={item.name} dataRef={item} icon={icon} key={item.id.toString()}>
+                            {renderTreeNodes(item.steps)}
+                        </TreeNode>
+                    );
+                }
+                // Only add leaf nodes to the list. Parents will be calculated automatically
+                if (item.enabled) {
+                    checkedKeys.push(item.id.toString());
+                }
+                return (
+                    <TreeNode title={item.name} dataRef={item} show icon={icon} key={item.id.toString()} {...item} />
+                );
+            });
+
+        return (
+            <Tree
+                onSelect={onSelect}
+                onCheck={(checkedKeys, info) => {
+                    onCheck(checkedKeys, info);
+                }}
+                checkable
+                defaultCheckedKeys={checkedKeys}
+                defaultExpandedKeys={[hierarchy.id.toString()]}
+                showIcon
+                showLine
+                switcherIcon={<DownOutlined />}
+            >
+                {renderTreeNodes([hierarchy])}
+            </Tree>
+        );
+    };
+
+    const onSelect = (selectedKeys, info) => {
+        console.log("selected", selectedKeys, info);
+    };
+    function onCheck(checkedKeys, info) {
+        console.log("onCheck", checkedKeys, info);
+        const dataRef = info.node.dataRef;
+
+        // TODO: Implement other types
+        // TODO: Keep expand status
+        if (dataRef.type === "POI") {
+            let newPoi = { ...dataRef, enabled: info.checked };
+            function replaceObjectById(tree, id, replacement) {
+                if (tree.id === id) {
+                    return replacement;
+                }
+
+                for (const key in tree) {
+                    if (typeof tree[key] === "object") {
+                        tree[key] = replaceObjectById(tree[key], id, replacement);
+                    }
+                }
+
+                return tree;
+            }
+
+            let newHierarchy = replaceObjectById({ ...hierarchy }, dataRef.id, newPoi);
+            setHierarchy(newHierarchy);
+        }
+    }
 
     function setTrip(name) {
         const trip = trips[name];
-
-        setHomes(getPlaces(trip, "Home"));
-        setPois(getPlaces(trip, "POI"));
-        setRoutes(getRoutes(trip));
+        setHierarchy(trip);
     }
 
     return (
         <>
             <p>Example Map</p>
-            <TreeComponent hierarchy={trips.mne} />
+            <TreeComponent hierarchy={hierarchy} />
             <Map homes={homes} pois={pois} routes={routes} />
             {Object.keys(trips).map((tripname) => (
                 <button

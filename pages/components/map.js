@@ -1,9 +1,10 @@
 // import React from "react";
-import L from "leaflet";
+import React, { useState, useEffect } from "react";
 import { latLngBounds } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
+import { Statistic } from "antd";
 
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 import MapPrint from "./map-print";
@@ -13,9 +14,7 @@ const Map = ({ homes, pois, routes }) => {
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
     // Zoom on map
-    // TODO: On reload the first HOME is centered...
     function ChangeView({ markers }) {
-        console.log("markers changeview", markers);
         const map = useMap();
 
         let markerBounds = latLngBounds([]);
@@ -29,10 +28,14 @@ const Map = ({ homes, pois, routes }) => {
     }
 
     const markers = [...homes, ...pois];
+    const enabledCount = pois.filter((p) => p.enabled == true).length;
 
     // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
     return (
         <>
+            {/* <Statistic title={"POIs"} value={pois.length} />
+            <Statistic title={"Enabled"} value={enabledCount} /> */}
+
             <MapContainer
                 center={homes[0] ?? DEFAULT_CENTER}
                 zoom={DEFAULT_ZOOM}
@@ -70,24 +73,35 @@ const Map = ({ homes, pois, routes }) => {
                 {routes.map((r) => (
                     <RoutingMachine waypoints={r.waypoints} linecolor={r.color} />
                 ))}
-                {homes.map((h) => (
-                    <Marker
-                        key={h.name}
-                        position={[h.lat, h.lon]}
-                        icon={AwesomeIconToMarker({ iconName: "location-pin-house", color: h.color })}
-                    >
-                        <Popup>{h.name}</Popup>
-                    </Marker>
-                ))}
-                {pois.map((p, index) => (
-                    <Marker
-                        key={p.name}
-                        position={[p.lat, p.lon]}
-                        icon={AwesomeIconToMarker({ iconName: "location-pin-number-" + (index + 1), color: p.color })}
-                    >
-                        <Popup>{p.name}</Popup>
-                    </Marker>
-                ))}
+                {homes.map((h) =>
+                    h.enabled ? (
+                        <Marker
+                            key={h.name}
+                            position={[h.lat, h.lon]}
+                            icon={AwesomeIconToMarker({ iconName: "location-pin-house", color: h.color })}
+                        >
+                            <Popup>{h.name}</Popup>
+                        </Marker>
+                    ) : (
+                        <></>
+                    ),
+                )}
+                {pois.map((p, index) =>
+                    p.enabled ? (
+                        <Marker
+                            key={p.name}
+                            position={[p.lat, p.lon]}
+                            icon={AwesomeIconToMarker({
+                                iconName: "location-pin-number-" + (index + 1),
+                                color: p.color,
+                            })}
+                        >
+                            <Popup>{p.name}</Popup>
+                        </Marker>
+                    ) : (
+                        <></>
+                    ),
+                )}
             </MapContainer>
         </>
     );
