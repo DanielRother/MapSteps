@@ -9,7 +9,7 @@ import { Statistic } from "antd";
 import { AwesomeIconToMarker, SvgMarker } from "./MapUtils";
 import MapPrint from "./map-print";
 
-const Map = ({ homes, pois, routes }) => {
+const Map = ({ markers, routes }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
@@ -27,8 +27,29 @@ const Map = ({ homes, pois, routes }) => {
         return null;
     }
 
-    const markers = [...homes, ...pois];
-    const enabledCount = pois.filter((p) => p.enabled == true).length;
+    function GetIcon(marker, index) {
+        switch (marker.type) {
+            case "Home":
+                return AwesomeIconToMarker({ iconName: "location-pin-house", color: marker.color });
+            case "POI":
+                return AwesomeIconToMarker({
+                    iconName: "location-pin-number-" + (index + 1),
+                    color: marker.color,
+                });
+            // Maybe use other dedicated pins as well
+            case "Routing":
+
+            case "Stage":
+
+            default:
+                return AwesomeIconToMarker({ iconName: "location-pin", color: marker.color });
+        }
+    }
+
+    // const markers = [...homes, ...pois];
+    // const enabledCount = pois.filter((p) => p.enabled == true).length;
+    const homes = markers.filter((p) => p.type === "Home");
+    const pois = markers.filter((p) => p.type === "POI");
 
     // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
     return (
@@ -73,6 +94,15 @@ const Map = ({ homes, pois, routes }) => {
                 {routes.map((r) => (
                     <RoutingMachine waypoints={r.waypoints} linecolor={r.color} />
                 ))}
+                {/* {markers.map((m, index) =>
+                    m.enabled ? (
+                        <Marker key={m.name} position={[m.lat, m.lon]} icon={GetIcon(m, index + 1)}>
+                            <Popup>{m.name}</Popup>
+                        </Marker>
+                    ) : (
+                        <></>
+                    ),
+                )} */}
                 {homes.map((h) =>
                     h.enabled ? (
                         <Marker

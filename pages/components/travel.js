@@ -571,10 +571,12 @@ const Travel = () => {
     const [hierarchy, setHierarchy] = useState(trips.mne);
     const homes = getPlaces(hierarchy, "Home");
     const pois = getPlaces(hierarchy, "POI");
+    const markers = [...homes, ...pois];
     const routes = getRoutes(hierarchy);
 
     // TODO: really required?
     let checkedKeys = [];
+    const [expandedKeys, setExpandedKey] = useState([]);
 
     const TreeComponent = ({ hierarchy }) => {
         if (Object.keys(hierarchy).length === 0) {
@@ -624,9 +626,10 @@ const Travel = () => {
                 onCheck={(checkedKeys, info) => {
                     onCheck(checkedKeys, info);
                 }}
+                onExpand={onExpand}
                 checkable
                 defaultCheckedKeys={checkedKeys}
-                defaultExpandedKeys={[hierarchy.id.toString()]}
+                defaultExpandedKeys={expandedKeys}
                 showIcon
                 showLine
                 switcherIcon={<DownOutlined />}
@@ -639,31 +642,45 @@ const Travel = () => {
     const onSelect = (selectedKeys, info) => {
         console.log("selected", selectedKeys, info);
     };
+
+    const onExpand = (expandedKeys) => {
+        console.log("expanded", expandedKeys);
+        setExpandedKey(expandedKeys);
+    };
+
     function onCheck(checkedKeys, info) {
         console.log("onCheck", checkedKeys, info);
         const dataRef = info.node.dataRef;
 
-        // TODO: Implement other types
-        // TODO: Keep expand status
-        if (dataRef.type === "POI") {
-            let newPoi = { ...dataRef, enabled: info.checked };
-            function replaceObjectById(tree, id, replacement) {
-                if (tree.id === id) {
-                    return replacement;
-                }
-
-                for (const key in tree) {
-                    if (typeof tree[key] === "object") {
-                        tree[key] = replaceObjectById(tree[key], id, replacement);
-                    }
-                }
-
-                return tree;
+        function setEnableToChildren(tree, enabled) {
+            tree.enabled = enabled;
+            if (tree.hasOwnProperty("steps")) {
+                tree.steps.forEach((step) => {
+                    step = setEnableToChildren(step, enabled);
+                });
             }
 
-            let newHierarchy = replaceObjectById({ ...hierarchy }, dataRef.id, newPoi);
-            setHierarchy(newHierarchy);
+            return tree;
         }
+
+        function replaceObjectById(tree, id, replacement) {
+            if (tree.id === id) {
+                return replacement;
+            }
+
+            for (const key in tree) {
+                if (typeof tree[key] === "object") {
+                    tree[key] = replaceObjectById(tree[key], id, replacement);
+                }
+            }
+
+            return tree;
+        }
+
+        let newPoi = setEnableToChildren({ ...dataRef }, info.checked);
+        let newHierarchy = replaceObjectById({ ...hierarchy }, dataRef.id, newPoi);
+        // console.log("newH", newHierarchy);
+        setHierarchy(newHierarchy);
     }
 
     function setTrip(name) {
@@ -675,7 +692,8 @@ const Travel = () => {
         <>
             <p>Example Map</p>
             <TreeComponent hierarchy={hierarchy} />
-            <Map homes={homes} pois={pois} routes={routes} />
+            {/* <Map homes={homes} pois={pois} routes={routes} /> */}
+            <Map markers={markers} routes={routes} />
             {Object.keys(trips).map((tripname) => (
                 <button
                     onClick={() => {
