@@ -28,6 +28,8 @@ const createRoutineMachineLayer = ({ waypoints, linecolor }) => {
     return instance;
 };
 
+// control.getRouter().options.urlParameters.vehicle = 'foot'; // https://gis.stackexchange.com/questions/193235/leaflet-routing-machine-how-to-dinamically-change-router-settings
+
 const RoutingMachine = createControlComponent(createRoutineMachineLayer);
 
 export default RoutingMachine;

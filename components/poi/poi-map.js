@@ -1,5 +1,5 @@
 // import React from "react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { latLngBounds } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -9,9 +9,22 @@ import { Statistic } from "antd";
 import { AwesomeIconToMarker, SvgMarker } from "./marker";
 import MapPrint from "./map-print";
 
-const PoiMap = ({ markers, routes }) => {
+const PoiMap = ({ markers, routes: route }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
+
+    const routingMachineRef = useRef(null);
+
+    React.useEffect(() => {
+        if (routingMachineRef.current && route.waypoints.length > 1) {
+            // Set waypoints
+            const newWaypoints = route.waypoints.map(({ lat, lon }) => L.latLng(lat, lon));
+            routingMachineRef.current.setWaypoints(newWaypoints);
+
+            // Set color
+            routingMachineRef.current.options.lineOptions.styles[0].color = route.color;
+        }
+    }, [route]);
 
     // Zoom on map
     function ChangeView({ markers }) {
@@ -19,7 +32,9 @@ const PoiMap = ({ markers, routes }) => {
 
         let markerBounds = latLngBounds([]);
         markers.forEach((marker) => {
-            markerBounds.extend([marker.lat, marker.lon]);
+            if (marker.enabled) {
+                markerBounds.extend([marker.lat, marker.lon]);
+            }
         });
 
         markerBounds.isValid() && map.fitBounds(markerBounds);
@@ -61,7 +76,7 @@ const PoiMap = ({ markers, routes }) => {
                 center={homes[0] ?? DEFAULT_CENTER}
                 zoom={DEFAULT_ZOOM}
                 scrollWheelZoom={true}
-                style={{ height: 750, width: "100%" }}
+                style={{ height: 700, width: "100%" }}
             >
                 {/* Filename could be usefull
                 TODO: Currently not working to due multiple tile layer */}
@@ -82,7 +97,6 @@ const PoiMap = ({ markers, routes }) => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                     </LayersControl.BaseLayer>
-                    {/* <TileLayer ref={ref} url={tileProvider.url} attribution={tileProvider.attribution} /> */}
                     <LayersControl.BaseLayer name="Mapbox">
                         <TileLayer
                             attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
@@ -91,9 +105,8 @@ const PoiMap = ({ markers, routes }) => {
                     </LayersControl.BaseLayer>
                 </LayersControl>
 
-                {routes.map((r) => (
-                    <RoutingMachine waypoints={r.waypoints} linecolor={r.color} />
-                ))}
+                <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
+
                 {/* {markers.map((m, index) =>
                     m.enabled ? (
                         <Marker key={m.name} position={[m.lat, m.lon]} icon={GetIcon(m, index + 1)}>

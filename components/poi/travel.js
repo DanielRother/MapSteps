@@ -3,7 +3,7 @@ import { Row, Col } from "antd";
 
 import PoiMap from "./poi-map";
 import PoiTree from "./poi-tree";
-import { getPlaces, getRoutes } from "../../utils/map-utils";
+import { flatten, getPlaces, getRoutes } from "../../utils/map-utils";
 
 const Travel = () => {
     let mnePois = {
@@ -509,10 +509,17 @@ const Travel = () => {
 
     // TODO: Improve the loading once the data is really received from somewhere...
     const [hierarchy, setHierarchy] = useState(trips.mne);
+
     const homes = getPlaces(hierarchy, "Home");
     const pois = getPlaces(hierarchy, "POI");
     const markers = [...homes, ...pois];
-    const routes = getRoutes(hierarchy);
+
+    const waypoints = flatten(hierarchy);
+    const route = {
+        waypoints: waypoints,
+        color: "#eb3b5a",
+    };
+
     function setTrip(name) {
         const trip = trips[name];
         setHierarchy(trip);
@@ -539,7 +546,7 @@ const Travel = () => {
                     <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
                 </Col>
                 <Col span={18}>
-                    <PoiMap markers={markers} routes={routes[0]} />
+                    <PoiMap markers={markers} routes={route} />
                 </Col>
             </Row>
         </>

@@ -69,6 +69,35 @@ export function getPlaces(data, type) {
     return places;
 }
 
+export function flatten(tree) {
+    if (Object.keys(tree).length === 0) {
+        return [];
+    }
+
+    let currentWaypoints = [];
+    if (tree.hasOwnProperty("steps")) {
+        tree.steps.forEach((step) => {
+            if (step.enabled) {
+                if (step.type != "Stage") {
+                    currentWaypoints.push(step);
+                }
+                if (step.hasOwnProperty("steps")) {
+                    let childWaypoints = flatten(step);
+
+                    if (step.type == "Stage" && step.useForRouting) {
+                        childWaypoints.unshift(step);
+                        childWaypoints.push(step);
+                    }
+
+                    currentWaypoints = currentWaypoints.concat(childWaypoints);
+                }
+            }
+        });
+    }
+
+    return currentWaypoints;
+}
+
 export function getRoutes(data) {
     if (Object.keys(data).length === 0) {
         return [];
