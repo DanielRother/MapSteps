@@ -237,12 +237,14 @@ const Travel = () => {
     };
 
     let elternzeitPois = {
+        id: 1,
         name: "Elternzeit 2023",
         color: "#3867d6",
         type: "Stage",
         useForRouting: false,
         steps: [
             {
+                id: 2,
                 name: "Heimatadresse",
                 address: "",
                 lat: 52.4180376,
@@ -251,6 +253,7 @@ const Travel = () => {
                 type: "Home", // TODO: Type start/finish
             },
             {
+                id: 3,
                 name: "Hercules Denkmal",
                 address: "Schlosspark 28, 34131 Kassel, Deutschland",
                 lat: 51.3160658,
@@ -259,6 +262,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 4,
                 name: "Landgasthof Felsenkeller",
                 address: "Dinkelsbühler Str. 7, 91614 Mönchsroth, Deutschland",
                 lat: 49.0250851,
@@ -267,6 +271,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 5,
                 name: "Alissa",
                 address: "Pötschnerstraße 9, 80634 München, Deutschland",
                 lat: 48.1516244,
@@ -275,6 +280,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 6,
                 name: "Bauernhof Höbarten",
                 address: "Wohlfahrtsschlag 6, Sankt Anton an der Jessnitz, 3283, Österreich",
                 lat: 47.9856841,
@@ -283,6 +289,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 7,
                 name: "Erzberg",
                 address: "Erzberg; 8790 Eisenerz, Österreich",
                 lat: 47.5179027,
@@ -291,6 +298,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 8,
                 name: "Unterkunft Bled",
                 address: "Stagne 34, 4260 Bled, Slowenien",
                 lat: 46.3901254,
@@ -299,6 +307,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 9,
                 name: "Höhlen von Postojna",
                 address: "Jamska cesta 30, 6230 Postojna, Slowenien",
                 lat: 45.7830298,
@@ -307,6 +316,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 10,
                 name: "Predjama Burg",
                 address: "Predjama 1, 6230 Predjama, Slowenien",
                 lat: 45.8158037,
@@ -315,6 +325,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 11,
                 name: "Unterkunft Piran",
                 address: "Ulica Istrskega odreda 50, 6320 Portorož - Portorose, Slowenien",
                 lat: 45.5097763,
@@ -323,6 +334,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 12,
                 name: "Unterkunft Pula",
                 address: "Ohreggerova ul. 22, 52100 Pula, Kroatien",
                 lat: 44.8505162,
@@ -331,6 +343,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 13,
                 name: "Labin",
                 address: "",
                 lat: 45.1821042,
@@ -339,6 +352,7 @@ const Travel = () => {
                 type: "Routing",
             },
             {
+                id: 14,
                 name: "Opatija",
                 address: "",
                 lat: 45.3395294,
@@ -347,6 +361,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 15,
                 name: "Unterkunft Rijeka",
                 address: "Krasica 173, Krasica, Primorsko-goranska županija 51224, Kroatien",
                 lat: 45.3097258,
@@ -355,6 +370,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 16,
                 name: "Slunje Rastoke",
                 address: "",
                 lat: 45.1209741,
@@ -363,6 +379,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 17,
                 name: "NP Plitvicer Seen",
                 address: "",
                 lat: 44.8653966,
@@ -371,6 +388,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 18,
                 name: "Unterkunft NP Plitvicer Seen",
                 address: "Smoljanac 26, 53231, Smoljanac, Kroatien",
                 lat: 44.9308172,
@@ -379,6 +397,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 19,
                 name: "Unterkunft Vodice",
                 address: "Zatonska ul. 47a, 22211, Vodice, Kroatien",
                 lat: 43.7684914,
@@ -387,6 +406,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 20,
                 name: "Ston",
                 address: "",
                 lat: 42.8372737,
@@ -395,6 +415,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 21,
                 name: "Unterkunft Dubrovnik",
                 address: "Šetalište dr. Franja Tuđmana 15, 20207, Srebreno, Kroatien",
                 lat: 42.6243342,
@@ -403,6 +424,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 22,
                 name: "Dubrovnik",
                 address: "",
                 lat: 42.6457359,
@@ -411,6 +433,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 23,
                 name: "Arboretum Trsteno",
                 address: "Potok 20, 20233, Trsteno, Kroatien",
                 lat: 42.7131577,
@@ -420,6 +443,7 @@ const Travel = () => {
             },
 
             {
+                id: 24,
                 name: "Perast",
                 address: "",
                 lat: 42.4876621,
@@ -428,6 +452,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 25,
                 name: "Unterkunft Budva",
                 address: "bb Latinska ulica, Kotor 85317, Montenegro",
                 lat: 42.3069694,
@@ -436,6 +461,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 26,
                 name: "Kloster Ostrog, M2FJ+W64, Dabojevići, Montenegro",
                 address: "",
                 lat: 42.6747602,
@@ -444,6 +470,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 27,
                 name: "Unterkunft Nikšić",
                 address: "",
                 lat: 42.806415,
@@ -452,6 +479,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 28,
                 name: "Crno Jezero",
                 address: "",
                 lat: 43.1453521,
@@ -460,6 +488,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 29,
                 name: "Đurđevića-Tara-Brücke",
                 address: "",
                 lat: 43.150201,
@@ -468,6 +497,7 @@ const Travel = () => {
                 type: "POI",
             },
             {
+                id: 30,
                 name: "Unterkunft Mostar",
                 address: "",
                 lat: 43.2145872,
@@ -476,6 +506,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 31,
                 name: "Unterkunft Wien",
                 address: "Am Tabor 12, 1020 Wien, Österreich",
                 lat: 48.2247272,
@@ -484,6 +515,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 32,
                 name: "Unterkunft Sächsische Schweiz",
                 address: "Zittauer Str. 7, 01877 Schmölln-Putzkau",
                 lat: 51.0983278,
@@ -492,6 +524,7 @@ const Travel = () => {
                 type: "Home",
             },
             {
+                id: 33,
                 name: "Heimatadresse",
                 address: "",
                 lat: 52.4180376,
