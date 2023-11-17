@@ -36,6 +36,18 @@ const PoiMap = ({ markers, route, countryMask }) => {
             .then((resp) => resp.json())
             .then((data) => {
                 // console.log("data fetched", data);
+
+                // Remove marker (capital and geografic middle)
+                var cleanedFeatures = [];
+                data.features.forEach((feature) => {
+                    if (feature.geometry.type === "Point") {
+                        return;
+                    }
+
+                    cleanedFeatures.push(feature);
+                });
+                data.features = cleanedFeatures;
+
                 setGeoJSON(data);
                 setGeojsonName(countryMask);
             });
@@ -103,10 +115,10 @@ const PoiMap = ({ markers, route, countryMask }) => {
     };
 
     var photoSizeLandscape = {
-        width: 5472,
-        height: 3648,
+        width: 1080 * 2,
+        height: 1920,
         className: "photoSizeLandscape",
-        name: "Photo Size (Landscape)",
+        name: "Panorama",
     };
 
     var photoSizePortrait = {
@@ -151,7 +163,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
                     <FullscreenControl />
                     <MapPrint
                         position="topright"
-                        sizeModes={["Current", "A4Portrait", "A4Landscape", photoSizeLandscape, photoSizePortrait]}
+                        sizeModes={["Current", "A4Portrait", "A4Landscape", photoSizeLandscape]}
                         hideControlContainer={true}
                         title="Export as PNG"
                         exportOnly
@@ -159,7 +171,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
 
                     <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
                 </Pane>
-                <Pane name="middle" style={{ zIndex: 600 }}>
+                <Pane name="poi" style={{ zIndex: 1000 }}>
                     {/* {markers.map((m, index) =>
                     m.enabled ? (
                         <Marker key={m.name} position={[m.lat, m.lon]} icon={GetIcon(m, index + 1)}>
@@ -199,7 +211,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
                         ),
                     )}
                 </Pane>
-                <Pane name="top" style={{ zIndex: 1000 }}>
+                <Pane name="countryMask" style={{ zIndex: 600 }}>
                     {geoJSON && <GeoJSON data={geoJSON} style={countryMaskStyle} invert={true} key={geojsonName} />}
                 </Pane>
             </MapContainer>
