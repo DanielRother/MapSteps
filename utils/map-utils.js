@@ -49,22 +49,25 @@ export function getPlaces(data, type) {
     }
     let places = [];
 
+    console.log("data.name", data.name);
     if (data.type === type) {
         places.push(data);
     }
 
-    data.steps.forEach((step) => {
-        if (step.type === type) {
-            places.push(step);
-        }
+    if (data.hasOwnProperty("steps")) {
+        data.steps.forEach((step) => {
+            if (step.type === type) {
+                places.push(step);
+            }
 
-        if (step.hasOwnProperty("steps")) {
-            step.steps.forEach((child) => {
-                let childrenPlaces = getPlaces(child, type);
-                places = places.concat(childrenPlaces);
-            });
-        }
-    });
+            if (step.hasOwnProperty("steps")) {
+                step.steps.forEach((child) => {
+                    let childrenPlaces = getPlaces(child, type);
+                    places = places.concat(childrenPlaces);
+                });
+            }
+        });
+    }
 
     return places;
 }
