@@ -14,6 +14,8 @@ import path from "path";
 import { AwesomeIconToMarker, SvgMarker } from "./marker";
 import MapPrint from "./map-print";
 
+import osmtogeojson from "osmtogeojson";
+
 const PoiMap = ({ markers, route, countryMask }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover

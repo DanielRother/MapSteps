@@ -1,0 +1,9 @@
+## declare an array variable
+declare -a arr=("CUW" "AFG" "EGY" "ALA" "ALB" "DZA" "ASM" "VIR" "AND" "AGO" "AIA" "ATA" "ATG" "GNQ" "ARG" "ARM" "ABW" "AZE" "ETH" "AUS" "BHS" "BHR" "BGD" "BRB" "BLR" "BEL" "BLZ" "BEN" "BMU" "BTN" "BOL" "BES" "BIH" "BWA" "BVT" "BRA" "VGB" "IOT" "BRN" "BGR" "BFA" "BDI" "CHL" "CHN" "COK" "CRI" "CIV" "CUW" "DNK" "DEU" "DMA" "DOM" "DJI" "ECU" "SLV" "ERI" "EST" "FLK" "FRO" "FJI" "FIN" "FRA" "GUF" "PYF" "ATF" "GAB" "GMB" "GEO" "GHA" "GIB" "GRD" "GRC" "GRL" "GLP" "GUM" "GTM" "GGY" "GIN" "GNB" "GUY" "HTI" "HMD" "HND" "HKG" "IND" "IDN" "IMN" "IRQ" "IRN" "IRL" "ISL" "ISR" "ITA" "JAM" "JPN" "YEM" "JEY" "JOR" "CYM" "KHM" "CMR" "CAN" "CPV" "KAZ" "QAT" "KEN" "KGZ" "KIR" "CCK" "COL" "COM" "COD" "PRK" "KOR" "HRV" "CUB" "KWT" "LAO" "LSO" "LVA" "LBN" "LBR" "LBY" "LIE" "LTU" "LUX" "MAC" "MDG" "MWI" "MYS" "MDV" "MLI" "MLT" "MAR" "MHL" "MTQ" "MRT" "MUS" "MYT" "MEX" "FSM" "MDA" "MCO" "MNG" "MNE" "MSR" "MOZ" "MMR" "NAM" "NRU" "NPL" "NCL" "NZL" "NIC" "NLD" "NER" "NGA" "NIU" "MKD" "MNP" "NFK" "NOR" "OMN" "AUT" "TLS" "PAK" "PSE" "PLW" "PAN" "PNG" "PRY" "PER" "PHL" "PCN" "POL" "PRT" "PRI" "TWN" "COG" "REU" "RWA" "ROU" "RUS" "BLM" "MAF" "SLB" "ZMB" "WSM" "SMR" "STP" "SAU" "SWE" "CHE" "SEN" "SRB" "SYC" "SLE" "ZWE" "SGP" "SXM" "SVK" "SVN" "SOM" "ESP" "LKA" "SHN" "KNA" "LCA" "SPM" "VCT" "ZAF" "SDN" "SGS" "SSD" "SUR" "SJM" "SWZ" "SYR" "TJK" "TZA" "THA" "TGO" "TKL" "TON" "TTO" "TCD" "CZE" "TUN" "TUR" "TKM" "TCA" "TUV" "UGA" "UKR" "HUN" "UMI" "URY" "UZB" "VUT" "VAT" "VEN" "ARE" "USA" "GBR" "VNM" "WLF" "CXR" "ESH" "CAF" "CYP" "XKX")
+
+## now loop through the above array
+for i in "${arr[@]}"
+do
+   node download-geojson.js "$i"
+   # or do whatever with individual element of the array
+done
