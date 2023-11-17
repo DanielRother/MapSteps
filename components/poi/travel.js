@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Row, Col } from "antd";
+import { Row, Col, Button, Space, Typography } from "antd";
+
+const { Text, Link } = Typography;
 
 import PoiMap from "./poi-map";
 import PoiTree from "./poi-tree";
@@ -558,20 +560,43 @@ const Travel = () => {
         setHierarchy(trip);
     }
 
+    const possibleCountyMasks = ["BIH", "DEU", "HRV", "MNE", "SVN"];
+    const [countryMask, setCountryMask] = useState("");
+
     return (
         <>
             <Row>
                 <p>Example Map</p>
             </Row>
             <Row>
+                <Text>Trips</Text>
                 {Object.keys(trips).map((tripname) => (
-                    <button
+                    <Button
                         onClick={() => {
                             setTrip(tripname);
                         }}
                     >
                         {tripname}
-                    </button>
+                    </Button>
+                ))}
+            </Row>
+            <Row>
+                <Text>Country Mask</Text>
+                <Button
+                    onClick={() => {
+                        setCountryMask("");
+                    }}
+                >
+                    Reset
+                </Button>
+                {possibleCountyMasks.map((countryName) => (
+                    <Button
+                        onClick={() => {
+                            setCountryMask(countryName);
+                        }}
+                    >
+                        {countryName}
+                    </Button>
                 ))}
             </Row>
             <Row>
@@ -579,7 +604,8 @@ const Travel = () => {
                     <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
                 </Col>
                 <Col span={18}>
-                    <PoiMap markers={markers} routes={route} />
+                    <PoiMap markers={markers} route={route} countryMask={countryMask} />
+                    {/* <Map /> */}
                 </Col>
             </Row>
         </>
