@@ -15,7 +15,6 @@
     "file-saver": "^2.0.5",
     "i18n-iso-countries": "^7.6.0",
     "i18next": "^23.4.4",
-    "leaflet-boundary-canvas": "^1.0.0",
     "leaflet-easyprint": "^2.1.9",
     "leaflet-routing-machine": "^3.2.12",
     "leaflet.snogylop": "^0.4.0",
@@ -28,7 +27,8 @@
     "react-dom": "18.2.0",
     "react-i18next": "^13.0.3",
     "react-icons": "^4.11.0",
-    "react-leaflet": "^4.2.1"
+    "react-leaflet": "^4.2.1",
+    "react-leaflet-fullscreen": "^4.1.1"
   },
   "devDependencies": {
     "babel-plugin-static-fs": "^3.0.0"

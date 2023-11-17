@@ -6,8 +6,9 @@ import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 import "leaflet.snogylop";
 import { Statistic } from "antd";
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import "leaflet.fullscreen/Control.FullScreen.css";
 
-import { promises as fs } from "fs";
 import path from "path";
 
 import { AwesomeIconToMarker, SvgMarker } from "./marker";
@@ -101,6 +102,20 @@ const PoiMap = ({ markers, route, countryMask }) => {
         color: "#a5b1c2",
     };
 
+    var photoSizeLandscape = {
+        width: 5472,
+        height: 3648,
+        className: "photoSizeLandscape",
+        name: "Photo Size (Landscape)",
+    };
+
+    var photoSizePortrait = {
+        width: 3648,
+        height: 5472,
+        className: "photoSizePortrait",
+        name: "Photo Size (Portrait)",
+    };
+
     // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
     return (
         <>
@@ -114,15 +129,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
                 style={{ height: 700, width: "100%" }}
             >
                 <Pane name="base" style={{ zIndex: 100 }}>
-                    {/* Filename could be usefull
-                TODO: Currently not working to due multiple tile layer */}
-                    <MapPrint
-                        position="topleft"
-                        sizeModes={["Current", "A4Portrait", "A4Landscape"]}
-                        hideControlContainer={true}
-                        title="Export as PNG"
-                        exportOnly
-                    />
+                    {/* Filename could be useful */}
 
                     <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={markers} />
 
@@ -140,6 +147,15 @@ const PoiMap = ({ markers, route, countryMask }) => {
                             />
                         </LayersControl.BaseLayer>
                     </LayersControl>
+
+                    <FullscreenControl />
+                    <MapPrint
+                        position="topright"
+                        sizeModes={["Current", "A4Portrait", "A4Landscape", photoSizeLandscape, photoSizePortrait]}
+                        hideControlContainer={true}
+                        title="Export as PNG"
+                        exportOnly
+                    />
 
                     <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
                 </Pane>
