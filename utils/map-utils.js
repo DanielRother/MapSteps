@@ -49,7 +49,7 @@ export function getPlaces(data, type) {
     }
     let places = [];
 
-    console.log("data.name", data.name);
+    // console.log("data.name", data.name);
     if (data.type === type) {
         places.push(data);
     }
@@ -72,31 +72,42 @@ export function getPlaces(data, type) {
     return places;
 }
 
-export function flatten(tree) {
+export function flatten(tree, forceRouteHomes) {
     if (Object.keys(tree).length === 0) {
         return [];
     }
 
     let currentWaypoints = [];
+    // console.log("tree", tree);
+
+    // TBD: Is this required? What happens of the root element is no stage?
+    // if (tree.enabled && tree.type != "Stage") {
+    //     console.log("**** push");
+    //     currentWaypoints.push(tree);
+    // }
+
     if (tree.hasOwnProperty("steps")) {
         tree.steps.forEach((step) => {
-            if (step.enabled) {
-                if (step.type != "Stage") {
-                    currentWaypoints.push(step);
-                }
-                if (step.hasOwnProperty("steps")) {
-                    let childWaypoints = flatten(step);
+            if (step.enabled && step.type != "Stage") {
+                // console.log("step", step);
+                // console.log("**** push");
+                currentWaypoints.push(step);
+            } else if (step.type == "Home" && forceRouteHomes) {
+                currentWaypoints.push(step);
+            }
 
-                    if (step.type == "Stage" && step.useForRouting) {
-                        childWaypoints.unshift(step);
-                        childWaypoints.push(step);
-                    }
+            if (step.hasOwnProperty("steps")) {
+                let childWaypoints = flatten(step, forceRouteHomes);
 
-                    currentWaypoints = currentWaypoints.concat(childWaypoints);
+                if ((step.type == "Stage" || step.type == "Home") && step.useForRouting && childWaypoints.length > 0) {
+                    childWaypoints.unshift(step);
+                    childWaypoints.push(step);
                 }
+                currentWaypoints = currentWaypoints.concat(childWaypoints);
             }
         });
     }
+    console.log("currentWaypoints", currentWaypoints);
 
     return currentWaypoints;
 }

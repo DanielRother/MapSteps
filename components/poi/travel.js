@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Space, Typography } from "antd";
+import { Row, Col, Button, Space, Typography, Checkbox } from "antd";
 
 const { Text, Link } = Typography;
 
@@ -268,8 +268,8 @@ const Travel = () => {
                         id: 302,
                         name: "2023-05-14",
                         address: "",
-                        lat: 52.4180376,
-                        lon: 9.6970564,
+                        lat: 52.4180375,
+                        lon: 9.6947658,
                         color: "#3867d6",
                         type: "Stage",
                         useForRouting: false,
@@ -277,12 +277,12 @@ const Travel = () => {
                         steps: [
                             {
                                 id: 2,
-                                name: "Heimatadresse",
+                                name: "Heimatadresse Start",
                                 address: "",
-                                lat: 52.4180376,
-                                lon: 9.6970564,
+                                lat: 52.4180375,
+                                lon: 9.6947658,
                                 color: "#eb3b5a",
-                                type: "Home", // TODO: Type start/finish
+                                type: "Home",
                                 enabled: true,
                             },
                             {
@@ -1358,12 +1358,12 @@ const Travel = () => {
                     },
                     {
                         id: 33,
-                        name: "Heimatadresse",
+                        name: "Heimatadresse Ziel",
                         address: "",
-                        lat: 52.4180376,
-                        lon: 9.6970564,
-                        color: "#a5b1c2",
-                        type: "Routing",
+                        lat: 52.4180375,
+                        lon: 9.6947658,
+                        color: "#eb3b5a",
+                        type: "Home",
                         enabled: true,
                     },
                 ],
@@ -1378,12 +1378,22 @@ const Travel = () => {
 
     // TODO: Improve the loading once the data is really received from somewhere...
     const [hierarchy, setHierarchy] = useState(trips.elternzeit);
+    const [forceRouteHomes, setForceRouteHomes] = useState(false);
+    const [showHomes, setShowHomes] = useState(true);
+    const [showPois, setShowPois] = useState(true);
 
-    const homes = getPlaces(hierarchy, "Home");
-    const pois = getPlaces(hierarchy, "POI");
-    const markers = [...homes, ...pois];
+    let markers = [];
+    if (showHomes) {
+        const homes = getPlaces(hierarchy, "Home");
+        markers.push(...homes);
+    }
+    if (showPois) {
+        const pois = getPlaces(hierarchy, "POI");
+        markers.push(...pois);
+    }
 
-    const waypoints = flatten(hierarchy);
+    // console.log("------------- flatten -------------");
+    const waypoints = flatten(hierarchy, forceRouteHomes);
     const route = {
         waypoints: waypoints,
         color: "#eb3b5a",
@@ -1394,7 +1404,7 @@ const Travel = () => {
         setHierarchy(trip);
     }
 
-    const possibleCountyMasks = ["BIH", "DEU", "HRV", "MNE", "SVN"];
+    const possibleCountyMasks = ["AUT", "BIH", "DEU", "HRV", "MNE", "SVN"];
     const [countryMask, setCountryMask] = useState("");
 
     return (
@@ -1432,6 +1442,33 @@ const Travel = () => {
                         {countryName}
                     </Button>
                 ))}
+            </Row>
+            <Row>
+                <Text>Options</Text>
+                <Checkbox
+                    defaultChecked={forceRouteHomes}
+                    onClick={(e) => {
+                        setForceRouteHomes(e.target.checked);
+                    }}
+                >
+                    Force route Homes
+                </Checkbox>
+                <Checkbox
+                    defaultChecked={showHomes}
+                    onClick={(e) => {
+                        setShowHomes(e.target.checked);
+                    }}
+                >
+                    Show Homes
+                </Checkbox>
+                <Checkbox
+                    defaultChecked={showPois}
+                    onClick={(e) => {
+                        setShowPois(e.target.checked);
+                    }}
+                >
+                    Show POIs
+                </Checkbox>
             </Row>
             <Row>
                 <Col span={6} style={{ overflow: "auto", maxHeight: 700 }}>

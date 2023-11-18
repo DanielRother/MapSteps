@@ -109,6 +109,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
     // const enabledCount = pois.filter((p) => p.enabled == true).length;
     const homes = markers.filter((p) => p.type === "Home");
     const pois = markers.filter((p) => p.type === "POI");
+    console.log("homes map", homes);
 
     var countryMaskStyle = {
         fillColor: "#a5b1c2",
@@ -199,7 +200,7 @@ const PoiMap = ({ markers, route, countryMask }) => {
                     {pois.map((p, index) =>
                         p.enabled ? (
                             <Marker
-                                key={p.name}
+                                key={p.name + p.id}
                                 position={[p.lat, p.lon]}
                                 icon={AwesomeIconToMarker({
                                     iconName: "location-pin-number-" + (index + 1),
