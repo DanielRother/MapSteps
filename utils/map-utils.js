@@ -3,6 +3,9 @@ import countries from "i18n-iso-countries";
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "next-i18next";
 import { i18n } from "../next-i18next.config.js";
+import { latLngBounds } from "leaflet";
+import { Polyline } from "react-leaflet";
+import "polyline-encoded";
 
 export function groupBy(list, keyGetter) {
     const map = new Map();
@@ -91,9 +94,9 @@ export function flatten(tree, forceRouteHomes) {
             if (step.enabled && step.type != "Stage") {
                 // console.log("step", step);
                 // console.log("**** push");
-                currentWaypoints.push(step);
+                currentWaypoints.push({ ...step, rank: currentWaypoints.length });
             } else if (step.type == "Home" && forceRouteHomes) {
-                currentWaypoints.push(step);
+                currentWaypoints.push({ ...step, rank: currentWaypoints.length });
             }
 
             if (step.hasOwnProperty("steps")) {
@@ -103,7 +106,10 @@ export function flatten(tree, forceRouteHomes) {
                     childWaypoints.unshift(step);
                     childWaypoints.push(step);
                 }
-                currentWaypoints = currentWaypoints.concat(childWaypoints);
+                childWaypoints.forEach((c) => {
+                    currentWaypoints.push({ ...c, rank: currentWaypoints.length });
+                });
+                // currentWaypoints = currentWaypoints.concat(childWaypoints);
             }
         });
     }
@@ -143,4 +149,31 @@ export function getRoutes(data) {
     });
 
     return routes;
+}
+
+export async function calculateRoute(start, finish) {
+    var requestOptions = {
+        method: "GET",
+        redirect: "follow",
+        cache: "no-store",
+    };
+
+    const url = `https://router.project-osrm.org/route/v1/driving/${start.lon},${start.lat};${finish.lon},${finish.lat}`;
+    fetch(url, requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+            const resultJson = JSON.parse(result);
+            console.log("result", resultJson);
+
+            const encoded = resultJson.routes[0].geometry;
+            const polyline = L.Polyline.fromEncoded(encoded);
+            const route = {
+                encode: encoded,
+                polyline: polyline,
+            };
+            console.log(route);
+
+            setPolyline(route);
+        })
+        .catch((error) => console.log("error", error));
 }

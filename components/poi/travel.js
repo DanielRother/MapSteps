@@ -1394,6 +1394,7 @@ const Travel = () => {
 
     // console.log("------------- flatten -------------");
     const waypoints = flatten(hierarchy, forceRouteHomes);
+    const polylines = [];
     const route = {
         waypoints: waypoints,
         color: "#eb3b5a",

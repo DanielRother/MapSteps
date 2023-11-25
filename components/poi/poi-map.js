@@ -1,10 +1,11 @@
 // import React from "react";
 import React, { useState, useEffect, useRef } from "react";
 import { latLngBounds } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl, GeoJSON, Pane } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl, GeoJSON, Pane, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import RoutingMachine from "./routing-machine";
 import "leaflet.snogylop";
+import "polyline-encoded";
 import { Statistic } from "antd";
 import { FullscreenControl } from "react-leaflet-fullscreen";
 import "leaflet.fullscreen/Control.FullScreen.css";
@@ -13,10 +14,12 @@ import path from "path";
 
 import { AwesomeIconToMarker, SvgMarker } from "./marker";
 import MapPrint from "./map-print";
+import { calculateRoute } from "../../utils/map-utils";
 
 import osmtogeojson from "osmtogeojson";
 
-const PoiMap = ({ markers, route, countryMask }) => {
+export default function PoiMap({ markers, route, countryMask }) {
+    // const PoiMap = ({ markers, route, countryMask }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
@@ -55,14 +58,65 @@ const PoiMap = ({ markers, route, countryMask }) => {
             });
     };
 
-    React.useEffect(() => {
-        if (routingMachineRef.current && route.waypoints.length > 1) {
-            // Set waypoints
-            const newWaypoints = route.waypoints.map(({ lat, lon }) => L.latLng(lat, lon));
-            routingMachineRef.current.setWaypoints(newWaypoints);
+    const useRoutingMachine = false;
 
-            // Set color
-            routingMachineRef.current.options.lineOptions.styles[0].color = route.color;
+    const [polyline, setPolyline] = useState(null);
+
+    useEffect(() => {
+        if (useRoutingMachine) {
+            if (routingMachineRef.current && route.waypoints.length > 1) {
+                // Set waypoints
+                const newWaypoints = route.waypoints.map(({ lat, lon }) => L.latLng(lat, lon));
+                routingMachineRef.current.setWaypoints(newWaypoints);
+
+                // Set color
+                routingMachineRef.current.options.lineOptions.styles[0].color = route.color;
+            }
+        } else {
+            async function calculateRoute(coordinates) {
+                if (coordinates == null || coordinates.length < 2) {
+                    return;
+                }
+
+                coordinates.sort((a, b) => a.rank < b.rank);
+
+                var requestOptions = {
+                    method: "GET",
+                    redirect: "follow",
+                    cache: "no-store",
+                };
+
+                console.log("calculateRoute2", coordinates);
+                let coordinatesString = "";
+                coordinates.forEach((c) => {
+                    coordinatesString += `${c.lon},${c.lat};`;
+                });
+                coordinatesString = coordinatesString.slice(0, -1); // Remove the last character
+                // console.log(coordinatesString);
+                const url = `https://router.project-osrm.org/route/v1/driving/${coordinatesString}?overview=full`;
+                console.log("url", url);
+
+                fetch(url, requestOptions)
+                    .then((response) => response.text())
+                    .then((result) => {
+                        const resultJson = JSON.parse(result);
+                        console.log("result", resultJson);
+
+                        const encoded = resultJson.routes[0].geometry;
+                        const polyline = L.Polyline.fromEncoded(encoded);
+                        const route = {
+                            encode: encoded,
+                            polyline: polyline,
+                        };
+                        console.log(route);
+
+                        setPolyline(route);
+                    })
+                    .catch((error) => console.log("error", error));
+            }
+
+            // calculateRoute(markers[0], markers[1]);
+            calculateRoute(route.waypoints);
         }
     }, [route]);
 
@@ -172,7 +226,11 @@ const PoiMap = ({ markers, route, countryMask }) => {
                         exportOnly
                     />
 
-                    <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
+                    {useRoutingMachine ? (
+                        <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
+                    ) : polyline != null ? (
+                        <Polyline positions={polyline.polyline.getLatLngs()} color={route.color} weight={4} />
+                    ) : null}
                 </Pane>
                 <Pane name="poi" style={{ zIndex: 1000 }}>
                     {/* {markers.map((m, index) =>
@@ -220,6 +278,6 @@ const PoiMap = ({ markers, route, countryMask }) => {
             </MapContainer>
         </>
     );
-};
+}
 
-export default PoiMap;
+// export default PoiMap;

@@ -3,6 +3,8 @@ import { createControlComponent } from "@react-leaflet/core";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
+// TBD: Maybe call OSRM directly and store the returned polyline, e.g. https://router.project-osrm.org/route/v1/driving/9.6947658,52.4180375;9.3912614,51.3160658
+
 const createRoutineMachineLayer = ({ waypoints, linecolor }) => {
     const instance = L.Routing.control({
         waypoints: waypoints.map(({ lat, lon }) => L.latLng(lat, lon)),
