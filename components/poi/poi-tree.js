@@ -18,6 +18,7 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
     const renderTreeNodes = (data) =>
         data.map((item) => {
             let icon;
+            let title = item.name;
             switch (item.type) {
                 case "Home":
                     icon = <DecoratedCircle icon={faHouse} color={item.color} />;
@@ -30,6 +31,9 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
                     break;
                 case "Stage":
                     icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
+                    if (item.hasOwnProperty("start")) {
+                        title = item.start + " - " + item.name;
+                    }
                     break;
                 default:
                     icon = <DecoratedCircle icon={faQuestion} color={item.color} />;
@@ -37,7 +41,7 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
             }
             if (item.steps) {
                 return (
-                    <TreeNode title={item.name} dataRef={item} icon={icon} key={item.id.toString()}>
+                    <TreeNode title={title} dataRef={item} icon={icon} key={item.id.toString()}>
                         {renderTreeNodes(item.steps)}
                     </TreeNode>
                 );
@@ -46,7 +50,7 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
             if (item.enabled) {
                 checkedKeys.push(item.id.toString());
             }
-            return <TreeNode title={item.name} dataRef={item} show icon={icon} key={item.id.toString()} {...item} />;
+            return <TreeNode title={title} dataRef={item} show icon={icon} key={item.id.toString()} {...item} />;
         });
 
     const onSelect = (selectedKeys, info) => {

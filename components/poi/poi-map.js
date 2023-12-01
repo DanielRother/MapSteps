@@ -89,7 +89,7 @@ export default function PoiMap({ markers, route, countryMask }) {
                 console.log("calculateRoute2", coordinates);
                 let coordinatesString = "";
                 coordinates.forEach((c) => {
-                    coordinatesString += `${c.lon},${c.lat};`;
+                    coordinatesString += `${c.lon.toFixed(6)},${c.lat.toFixed(6)};`;
                 });
                 coordinatesString = coordinatesString.slice(0, -1); // Remove the last character
                 // console.log(coordinatesString);
