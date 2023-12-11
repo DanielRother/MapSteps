@@ -5,6 +5,7 @@ const { Text, Link } = Typography;
 
 import PoiMap from "./poi-map";
 import PoiTree from "./poi-tree";
+import CountrySelector from "../scratch/country-selector";
 import { flatten, getPlaces, getRoutes } from "../../utils/map-utils";
 
 const Travel = () => {
@@ -2795,6 +2796,8 @@ const Travel = () => {
     const [showHomes, setShowHomes] = useState(true);
     const [showPois, setShowPois] = useState(true);
 
+    const [selectedCountries, setSelectedCountries] = useState([]);
+
     let markers = [];
     if (showHomes) {
         const homes = getPlaces(hierarchy, "Home");
@@ -2857,6 +2860,9 @@ const Travel = () => {
                 ))}
             </Row>
             <Row>
+                <CountrySelector selected={selectedCountries} setSelected={setSelectedCountries} />
+            </Row>
+            <Row>
                 <Text>Options</Text>
                 <Checkbox
                     defaultChecked={forceRouteHomes}
@@ -2888,7 +2894,12 @@ const Travel = () => {
                     <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
                 </Col>
                 <Col span={17}>
-                    <PoiMap markers={markers} route={route} countryMask={countryMask} />
+                    <PoiMap
+                        markers={markers}
+                        route={route}
+                        countryMask={countryMask}
+                        selectedCountries={selectedCountries}
+                    />
                     {/* <Map /> */}
                 </Col>
             </Row>

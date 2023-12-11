@@ -15,10 +15,11 @@ import path from "path";
 import { AwesomeIconToMarker, SvgMarker } from "./marker";
 import MapPrint from "./map-print";
 import { calculateRoute } from "../../utils/map-utils";
+import { groupBy, getAllCountriesData } from "../../utils/map-utils.js";
 
 import osmtogeojson from "osmtogeojson";
 
-export default function PoiMap({ markers, route, countryMask }) {
+export default function PoiMap({ markers, route, countryMask, selectedCountries }) {
     // const PoiMap = ({ markers, route, countryMask }) => {
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
@@ -27,6 +28,19 @@ export default function PoiMap({ markers, route, countryMask }) {
 
     const [geoJSON, setGeoJSON] = useState(null);
     const [geojsonName, setGeojsonName] = useState("undef");
+
+    const [geoJSON2, setGeoJSON2] = useState([]);
+
+    const allCountriesData = getAllCountriesData();
+    const countriesByContinents = groupBy(allCountriesData, (c) => {
+        return c.continentCode;
+    });
+    const europeanCountries = countriesByContinents.get("EU");
+    const tur = allCountriesData.get("TUR");
+    europeanCountries.push(tur);
+    console.log("europeanCountries", europeanCountries);
+
+    console.log("sel countries", selectedCountries);
 
     const fetchGeoJSON = (countryMask) => {
         console.log("Get geojson for " + countryMask);
@@ -40,7 +54,7 @@ export default function PoiMap({ markers, route, countryMask }) {
         fetch(path.join(process.cwd(), `./geojson/${countryMask}.geojson`))
             .then((resp) => resp.json())
             .then((data) => {
-                // console.log("data fetched", data);
+                console.log("data fetched", data);
 
                 // Remove marker (capital and geografic middle)
                 var cleanedFeatures = [];
@@ -52,11 +66,62 @@ export default function PoiMap({ markers, route, countryMask }) {
                     cleanedFeatures.push(feature);
                 });
                 data.features = cleanedFeatures;
+                console.log("geoJSON", data);
 
                 setGeoJSON(data);
                 setGeojsonName(countryMask);
             });
     };
+
+    async function fetchGeoJSON2(selectedCountries) {
+        if (selectedCountries == null || selectedCountries == "") {
+            setGeoJSON2([]);
+            return;
+        }
+
+        var newGeoJson2 = [];
+        for await (const country of selectedCountries) {
+            console.log("Get geojson2 for " + country.alpha3);
+
+            fetch(path.join(process.cwd(), `./geojson/${country.alpha3}.geojson`))
+                .then((resp) => resp.json())
+                .then((data) => {
+                    console.log("data2 fetched", data);
+
+                    // Remove marker (capital and geografic middle)
+                    var cleanedFeatures = [];
+                    data.features.forEach((feature) => {
+                        if (feature.geometry.type === "Point") {
+                            return;
+                        }
+
+                        cleanedFeatures.push(feature);
+                    });
+                    data.features = cleanedFeatures;
+
+                    // newGeoJson2.set(country, data);
+                    newGeoJson2.push({ key: country.alpha3, data: data });
+                });
+        }
+
+        setGeoJSON2(newGeoJson2);
+
+        console.log("newGeoJson2 ready", geoJSON2);
+    }
+
+    useEffect(() => {
+        fetchGeoJSON(countryMask);
+    }, [countryMask]);
+
+    useEffect(() => {
+        if (selectedCountries.length > 0) {
+            let maskedCountries = europeanCountries.filter((el) => !selectedCountries.includes(el.alpha3));
+            console.log("maskedCountries", maskedCountries);
+            fetchGeoJSON2(maskedCountries);
+        } else {
+            fetchGeoJSON2(null);
+        }
+    }, [selectedCountries]);
 
     const useRoutingMachine = false;
 
@@ -120,10 +185,6 @@ export default function PoiMap({ markers, route, countryMask }) {
         }
     }, [route]);
 
-    useEffect(() => {
-        fetchGeoJSON(countryMask);
-    }, [countryMask]);
-
     // Zoom on map
     function ChangeView({ markers }) {
         const map = useMap();
@@ -167,7 +228,13 @@ export default function PoiMap({ markers, route, countryMask }) {
 
     var countryMaskStyle = {
         fillColor: "#a5b1c2",
-        fillOpacity: 1,
+        fillOpacity: 0.5,
+        color: "#a5b1c2",
+    };
+
+    var countryMaskStyle2 = {
+        fillColor: "#a5b1c2",
+        fillOpacity: 0.5,
         color: "#a5b1c2",
     };
 
@@ -190,6 +257,7 @@ export default function PoiMap({ markers, route, countryMask }) {
         <>
             {/* <Statistic title={"POIs"} value={pois.length} />
             <Statistic title={"Enabled"} value={enabledCount} /> */}
+            {/* <Statistic title={"selected"} value={geoJSON2.length} /> */}
 
             <MapContainer
                 center={homes[0] ?? DEFAULT_CENTER}
@@ -274,6 +342,11 @@ export default function PoiMap({ markers, route, countryMask }) {
                 </Pane>
                 <Pane name="countryMask" style={{ zIndex: 600 }}>
                     {geoJSON && <GeoJSON data={geoJSON} style={countryMaskStyle} invert={true} key={geojsonName} />}
+                </Pane>
+                <Pane name="countryMask2" style={{ zIndex: 800 }}>
+                    {geoJSON2.map((p, index) => (
+                        <GeoJSON data={p.data} style={countryMaskStyle2} key={p.key} />
+                    ))}
                 </Pane>
             </MapContainer>
         </>

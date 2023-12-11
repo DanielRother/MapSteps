@@ -23,7 +23,8 @@ export function groupBy(list, keyGetter) {
 
 export function getAllCountriesData() {
     const { t } = useTranslation();
-    const locale = t("locale");
+    // const locale = t("locale");      // Currently not working :(
+    const locale = "de";
 
     i18n.locales.forEach((l) => {
         countries.registerLocale(require("i18n-iso-countries/langs/" + l + ".json"));
@@ -113,7 +114,7 @@ export function flatten(tree, forceRouteHomes) {
             }
         });
     }
-    console.log("currentWaypoints", currentWaypoints);
+    // console.log("currentWaypoints", currentWaypoints);
 
     return currentWaypoints;
 }
