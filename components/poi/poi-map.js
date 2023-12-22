@@ -1,36 +1,43 @@
-// import React from "react";
-import React, { useState, useEffect, useRef } from "react";
-import { latLngBounds } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMap, LayersControl, GeoJSON, Pane, Polyline } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import RoutingMachine from "./routing-machine";
-import "leaflet.snogylop";
-import "polyline-encoded";
-import { Statistic } from "antd";
-import { FullscreenControl } from "react-leaflet-fullscreen";
 import "leaflet.fullscreen/Control.FullScreen.css";
+import "leaflet.snogylop";
+import "leaflet/dist/leaflet.css";
+import "polyline-encoded";
 
+import React, { useEffect, useRef, useState } from "react";
+
+import { latLngBounds } from "leaflet";
 import path from "path";
+import { GeoJSON, LayersControl, MapContainer, Marker, Pane, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
+import { FullscreenControl } from "react-leaflet-fullscreen";
 
-import { AwesomeIconToMarker, SvgMarker } from "./marker";
+import { getAllCountriesData, groupBy } from "../../utils/map-utils.js";
 import MapPrint from "./map-print";
-import { calculateRoute } from "../../utils/map-utils";
-import { groupBy, getAllCountriesData } from "../../utils/map-utils.js";
+import { AwesomeIconToMarker } from "./marker";
+import RoutingMachine from "./routing-machine";
 
-import osmtogeojson from "osmtogeojson";
-
-export default function PoiMap({ markers, route, countryMask, selectedCountries }) {
-    // const PoiMap = ({ markers, route, countryMask }) => {
+// Component which shows the given markers and route an an Mapbox map. Additionally, unimportant countries can be masked
+// TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
+export default function PoiMap({ markers, route, notMaskedCountries, maskOpacity = 0.5 }) {
+    //#region Constants
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
 
-    const routingMachineRef = useRef(null);
+    const USE_ROUTING_MACHINE = false;
+    //#endregion
 
-    const [geoJSON, setGeoJSON] = useState(null);
-    const [geojsonName, setGeojsonName] = useState("undef");
+    //#region MaskCountries
+    // It should be possible to show only those countries, selected by the user. The remaining are masked.
+    // TODO: Optimize this, such that not almost all countries have to be loaded, i.e. invert the result
 
-    const [geoJSON2, setGeoJSON2] = useState([]);
+    const [geoJsons, setGeoJsons] = useState([]);
 
+    var countryMaskStyle = {
+        fillColor: "#a5b1c2",
+        fillOpacity: maskOpacity,
+        color: "#a5b1c2",
+    };
+
+    // Due to performance issue (see TODO above) this is currently only possible for European countries (incl. Turkey)
     const allCountriesData = getAllCountriesData();
     const countriesByContinents = groupBy(allCountriesData, (c) => {
         return c.continentCode;
@@ -38,56 +45,18 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
     const europeanCountries = countriesByContinents.get("EU");
     const tur = allCountriesData.get("TUR");
     europeanCountries.push(tur);
-    console.log("europeanCountries", europeanCountries);
 
-    console.log("sel countries", selectedCountries);
-
-    const fetchGeoJSON = (countryMask) => {
-        console.log("Get geojson for " + countryMask);
-
-        if (countryMask == null || countryMask == "") {
-            setGeoJSON(null);
-            setGeojsonName("undef");
-            return;
-        }
-
-        fetch(path.join(process.cwd(), `./geojson/${countryMask}.geojson`))
-            .then((resp) => resp.json())
-            .then((data) => {
-                console.log("data fetched", data);
-
-                // Remove marker (capital and geografic middle)
-                var cleanedFeatures = [];
-                data.features.forEach((feature) => {
-                    if (feature.geometry.type === "Point") {
-                        return;
-                    }
-
-                    cleanedFeatures.push(feature);
-                });
-                data.features = cleanedFeatures;
-                console.log("geoJSON", data);
-
-                setGeoJSON(data);
-                setGeojsonName(countryMask);
-            });
-    };
-
-    async function fetchGeoJSON2(selectedCountries) {
+    async function fetchGeoJsons(selectedCountries) {
         if (selectedCountries == null || selectedCountries == "") {
-            setGeoJSON2([]);
+            setGeoJsons([]);
             return;
         }
 
-        var newGeoJson2 = [];
+        var fetchedGeoJsons = [];
         for await (const country of selectedCountries) {
-            console.log("Get geojson2 for " + country.alpha3);
-
             fetch(path.join(process.cwd(), `./geojson/${country.alpha3}.geojson`))
                 .then((resp) => resp.json())
                 .then((data) => {
-                    console.log("data2 fetched", data);
-
                     // Remove marker (capital and geografic middle)
                     var cleanedFeatures = [];
                     data.features.forEach((feature) => {
@@ -99,36 +68,33 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                     });
                     data.features = cleanedFeatures;
 
-                    // newGeoJson2.set(country, data);
-                    newGeoJson2.push({ key: country.alpha3, data: data });
+                    fetchedGeoJsons.push({ key: country.alpha3, data: data });
                 });
         }
 
-        setGeoJSON2(newGeoJson2);
-
-        console.log("newGeoJson2 ready", geoJSON2);
+        setGeoJsons(fetchedGeoJsons);
     }
 
     useEffect(() => {
-        fetchGeoJSON(countryMask);
-    }, [countryMask]);
-
-    useEffect(() => {
-        if (selectedCountries.length > 0) {
-            let maskedCountries = europeanCountries.filter((el) => !selectedCountries.includes(el.alpha3));
-            console.log("maskedCountries", maskedCountries);
-            fetchGeoJSON2(maskedCountries);
+        if (notMaskedCountries.length > 0) {
+            let maskedCountries = europeanCountries.filter((el) => !notMaskedCountries.includes(el.alpha3));
+            // console.log("maskedCountries", maskedCountries);
+            fetchGeoJsons(maskedCountries);
         } else {
-            fetchGeoJSON2(null);
+            fetchGeoJsons(null);
         }
-    }, [selectedCountries]);
+    }, [notMaskedCountries]);
+    //#endregion
 
-    const useRoutingMachine = false;
-
+    //#region Routing
+    // Either use react-leaflet build-in routing machine or calculate the route yourself by calling the OSMR API.
+    // The former is easier but the requests may become to larger for longer journeys
+    // The behavior can be configured using the USE_ROUTING_MACHINE const
+    const routingMachineRef = useRef(null);
     const [polyline, setPolyline] = useState(null);
 
     useEffect(() => {
-        if (useRoutingMachine) {
+        if (USE_ROUTING_MACHINE) {
             if (routingMachineRef.current && route.waypoints.length > 1) {
                 // Set waypoints
                 const newWaypoints = route.waypoints.map(({ lat, lon }) => L.latLng(lat, lon));
@@ -151,21 +117,17 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                     cache: "no-store",
                 };
 
-                console.log("calculateRoute2", coordinates);
                 let coordinatesString = "";
                 coordinates.forEach((c) => {
                     coordinatesString += `${c.lon.toFixed(6)},${c.lat.toFixed(6)};`;
                 });
                 coordinatesString = coordinatesString.slice(0, -1); // Remove the last character
-                // console.log(coordinatesString);
                 const url = `https://router.project-osrm.org/route/v1/driving/${coordinatesString}?overview=full`;
-                console.log("url", url);
 
                 fetch(url, requestOptions)
                     .then((response) => response.text())
                     .then((result) => {
                         const resultJson = JSON.parse(result);
-                        console.log("result", resultJson);
 
                         const encoded = resultJson.routes[0].geometry;
                         const polyline = L.Polyline.fromEncoded(encoded);
@@ -173,19 +135,19 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                             encode: encoded,
                             polyline: polyline,
                         };
-                        console.log(route);
 
                         setPolyline(route);
                     })
                     .catch((error) => console.log("error", error));
             }
 
-            // calculateRoute(markers[0], markers[1]);
             calculateRoute(route.waypoints);
         }
     }, [route]);
+    //#endregion
 
-    // Zoom on map
+    //#region CameraHandling
+    // Default: Zoom on map such that all markers are shown
     function ChangeView({ markers }) {
         const map = useMap();
 
@@ -200,7 +162,9 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
 
         return null;
     }
+    //#endregion
 
+    //#region Marker
     function getIcon(marker, index) {
         switch (marker.type) {
             case "Home":
@@ -224,20 +188,11 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
     // const enabledCount = pois.filter((p) => p.enabled == true).length;
     const homes = markers.filter((p) => p.type === "Home");
     const pois = markers.filter((p) => p.type === "POI");
-    console.log("homes map", homes);
+    // console.log("homes map", homes);
+    //#endregion
 
-    var countryMaskStyle = {
-        fillColor: "#a5b1c2",
-        fillOpacity: 0.5,
-        color: "#a5b1c2",
-    };
-
-    var countryMaskStyle2 = {
-        fillColor: "#a5b1c2",
-        fillOpacity: 0.5,
-        color: "#a5b1c2",
-    };
-
+    //#region Misc
+    // Print sizes
     var photoSizeLandscape = {
         width: 1080 * 2,
         height: 1920,
@@ -251,8 +206,8 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
         className: "photoSizePortrait",
         name: "Photo Size (Portrait)",
     };
+    //#endregion
 
-    // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
     return (
         <>
             {/* <Statistic title={"POIs"} value={pois.length} />
@@ -265,9 +220,8 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                 scrollWheelZoom={true}
                 style={{ height: 700, width: "100%" }}
             >
+                {/* Base Map (incl. the routing) */}
                 <Pane name="base" style={{ zIndex: 100 }}>
-                    {/* Filename could be useful */}
-
                     <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={markers} />
 
                     <LayersControl position="topright">
@@ -294,12 +248,14 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                         exportOnly
                     />
 
-                    {useRoutingMachine ? (
+                    {USE_ROUTING_MACHINE ? (
                         <RoutingMachine waypoints={route.waypoints} linecolor={route.color} ref={routingMachineRef} />
                     ) : polyline != null ? (
                         <Polyline positions={polyline.polyline.getLatLngs()} color={route.color} weight={4} />
                     ) : null}
                 </Pane>
+
+                {/* POIs */}
                 <Pane name="poi" style={{ zIndex: 1000 }}>
                     {/* {markers.map((m, index) =>
                     m.enabled ? (
@@ -340,17 +296,14 @@ export default function PoiMap({ markers, route, countryMask, selectedCountries 
                         ),
                     )}
                 </Pane>
-                <Pane name="countryMask" style={{ zIndex: 600 }}>
-                    {geoJSON && <GeoJSON data={geoJSON} style={countryMaskStyle} invert={true} key={geojsonName} />}
-                </Pane>
-                <Pane name="countryMask2" style={{ zIndex: 800 }}>
-                    {geoJSON2.map((p, index) => (
-                        <GeoJSON data={p.data} style={countryMaskStyle2} key={p.key} />
+
+                {/* CountryMask */}
+                <Pane name="countryMask" style={{ zIndex: 800 }}>
+                    {geoJsons.map((p, index) => (
+                        <GeoJSON data={p.data} style={countryMaskStyle} key={p.key} />
                     ))}
                 </Pane>
             </MapContainer>
         </>
     );
 }
-
-// export default PoiMap;

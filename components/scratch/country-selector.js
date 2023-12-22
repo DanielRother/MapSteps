@@ -1,10 +1,11 @@
 import { Button, Select, Space, Tag, Upload } from "antd";
 import { useTranslation } from "next-i18next";
-import { groupBy, getAllCountriesData } from "../../utils/map-utils.js";
+
+import { getAllCountriesData, groupBy } from "../../utils/map-utils.js";
 
 const { Option, OptGroup } = Select;
 
-export default function CountrySelector({ selected, setSelected }) {
+export default function CountrySelector({ selected, setSelected, placeholder }) {
     const { t } = useTranslation();
 
     const allCountriesData = getAllCountriesData();
@@ -86,7 +87,7 @@ export default function CountrySelector({ selected, setSelected }) {
             <Select
                 mode="multiple"
                 showSearch
-                placeholder={t("Select the countries you've visited yet")}
+                placeholder={placeholder ?? t("Select the countries you've visited yet")}
                 style={{
                     width: "100%",
                 }}

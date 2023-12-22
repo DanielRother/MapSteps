@@ -97,6 +97,8 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
         setHierarchy(newHierarchy);
     }
 
+
+
     return (
         <Tree
             onSelect={onSelect}

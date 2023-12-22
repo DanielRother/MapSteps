@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Space, Typography, Checkbox } from "antd";
+
+import { Button, Checkbox, Col, InputNumber, Row, Slider, Typography } from "antd";
+
+import { flatten, getPlaces } from "../../utils/map-utils";
+import CountrySelector from "../scratch/country-selector";
+import PoiMap from "./poi-map";
+import PoiTree from "./poi-tree";
 
 const { Text, Link } = Typography;
 
-import PoiMap from "./poi-map";
-import PoiTree from "./poi-tree";
-import CountrySelector from "../scratch/country-selector";
-import { flatten, getPlaces, getRoutes } from "../../utils/map-utils";
-
 const Travel = () => {
+    //#region Trips
+    // The trips possibly shown on the map
+    // TODO: Dynamically load this from somewhere
     let mnePois = {
         id: 1,
         name: "Montenegro",
@@ -2789,14 +2793,27 @@ const Travel = () => {
         elternzeit: elternzeitPois,
         mne: mnePois,
     };
+    //#endregion
 
-    // TODO: Improve the loading once the data is really received from somewhere...
-    const [hierarchy, setHierarchy] = useState(trips.elternzeit);
+    //#region Options
     const [forceRouteHomes, setForceRouteHomes] = useState(false);
     const [showHomes, setShowHomes] = useState(true);
     const [showPois, setShowPois] = useState(true);
-
     const [selectedCountries, setSelectedCountries] = useState([]);
+
+    const [maskOpacity, setMaskOpacity] = useState(0.5);
+    const onMaskOpacityChange = (newMaskOpacityValue) => {
+        setMaskOpacity(newMaskOpacityValue);
+    };
+    //#endregion
+
+    //#region MapSetup
+    const [hierarchy, setHierarchy] = useState(trips.elternzeit);
+
+    function setTrip(name) {
+        const trip = trips[name];
+        setHierarchy(trip);
+    }
 
     let markers = [];
     if (showHomes) {
@@ -2808,26 +2825,20 @@ const Travel = () => {
         markers.push(...pois);
     }
 
-    // console.log("------------- flatten -------------");
     const waypoints = flatten(hierarchy, forceRouteHomes);
     const route = {
         waypoints: waypoints,
         color: "#eb3b5a",
     };
-
-    function setTrip(name) {
-        const trip = trips[name];
-        setHierarchy(trip);
-    }
-
-    const possibleCountyMasks = ["AUT", "BIH", "DEU", "HRV", "MNE", "SVN"];
-    const [countryMask, setCountryMask] = useState("");
+    //#endregion
 
     return (
         <>
             <Row>
                 <p>Example Map</p>
             </Row>
+
+            {/* Trips */}
             <Row>
                 <Text>Trips</Text>
                 {Object.keys(trips).map((tripname) => (
@@ -2840,55 +2851,74 @@ const Travel = () => {
                     </Button>
                 ))}
             </Row>
+
+            {/* Options */}
             <Row>
-                <Text>Country Mask</Text>
-                <Button
-                    onClick={() => {
-                        setCountryMask("");
-                    }}
-                >
-                    Reset
-                </Button>
-                {possibleCountyMasks.map((countryName) => (
-                    <Button
-                        onClick={() => {
-                            setCountryMask(countryName);
+                <Col>
+                    <Text>Options</Text>
+                </Col>
+                <Col>
+                    <CountrySelector
+                        selected={selectedCountries}
+                        setSelected={setSelectedCountries}
+                        placeholder={"Which countries shouldn't be masked"}
+                    />
+                </Col>
+                <Col span={5}>
+                    <Text>Country Mask Opacity</Text>
+                    <Slider
+                        min={0}
+                        max={1}
+                        onChange={onMaskOpacityChange}
+                        value={typeof maskOpacity === "number" ? maskOpacity : 0}
+                        step={0.01}
+                    />
+
+                    <InputNumber
+                        min={0}
+                        max={1}
+                        style={{
+                            margin: "0 16px",
+                        }}
+                        step={0.01}
+                        value={maskOpacity}
+                        onChange={onMaskOpacityChange}
+                    />
+                </Col>
+
+                <Col>
+                    <Checkbox
+                        defaultChecked={showHomes}
+                        onClick={(e) => {
+                            setShowHomes(e.target.checked);
                         }}
                     >
-                        {countryName}
-                    </Button>
-                ))}
+                        Show Homes
+                    </Checkbox>
+                </Col>
+                <Col>
+                    <Checkbox
+                        defaultChecked={showPois}
+                        onClick={(e) => {
+                            setShowPois(e.target.checked);
+                        }}
+                    >
+                        Show POIs
+                    </Checkbox>
+                </Col>
+                <Col>
+                    <Checkbox
+                        defaultChecked={forceRouteHomes}
+                        onClick={(e) => {
+                            setForceRouteHomes(e.target.checked);
+                        }}
+                    >
+                        Force route Homes
+                    </Checkbox>
+                </Col>
             </Row>
-            <Row>
-                <CountrySelector selected={selectedCountries} setSelected={setSelectedCountries} />
-            </Row>
-            <Row>
-                <Text>Options</Text>
-                <Checkbox
-                    defaultChecked={forceRouteHomes}
-                    onClick={(e) => {
-                        setForceRouteHomes(e.target.checked);
-                    }}
-                >
-                    Force route Homes
-                </Checkbox>
-                <Checkbox
-                    defaultChecked={showHomes}
-                    onClick={(e) => {
-                        setShowHomes(e.target.checked);
-                    }}
-                >
-                    Show Homes
-                </Checkbox>
-                <Checkbox
-                    defaultChecked={showPois}
-                    onClick={(e) => {
-                        setShowPois(e.target.checked);
-                    }}
-                >
-                    Show POIs
-                </Checkbox>
-            </Row>
+
+            {/* Map */}
             <Row>
                 <Col span={7} style={{ overflow: "auto", maxHeight: 700 }}>
                     <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
@@ -2897,10 +2927,9 @@ const Travel = () => {
                     <PoiMap
                         markers={markers}
                         route={route}
-                        countryMask={countryMask}
-                        selectedCountries={selectedCountries}
+                        notMaskedCountries={selectedCountries}
+                        maskOpacity={maskOpacity}
                     />
-                    {/* <Map /> */}
                 </Col>
             </Row>
         </>
