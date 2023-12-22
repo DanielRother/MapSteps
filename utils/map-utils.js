@@ -1,11 +1,12 @@
-import { getContinentCode, getContinentName } from "@brixtol/country-continent";
-import countries from "i18n-iso-countries";
-import ReactCountryFlag from "react-country-flag";
-import { useTranslation } from "next-i18next";
-import { i18n } from "../next-i18next.config.js";
-import { latLngBounds } from "leaflet";
-import { Polyline } from "react-leaflet";
 import "polyline-encoded";
+
+import countries from "i18n-iso-countries";
+import { useTranslation } from "next-i18next";
+import ReactCountryFlag from "react-country-flag";
+
+import { getContinentCode } from "@brixtol/country-continent";
+
+import { i18n } from "../next-i18next.config.js";
 
 export function groupBy(list, keyGetter) {
     const map = new Map();
@@ -77,7 +78,7 @@ export function getPlaces(data, type) {
 }
 
 export function flatten(tree, forceRouteHomes) {
-    if (Object.keys(tree).length === 0) {
+    if (tree == null || Object.keys(tree).length === 0) {
         return [];
     }
 
@@ -113,6 +114,8 @@ export function flatten(tree, forceRouteHomes) {
                 // currentWaypoints = currentWaypoints.concat(childWaypoints);
             }
         });
+    } else {
+        currentWaypoints.push(tree);
     }
     // console.log("currentWaypoints", currentWaypoints);
 

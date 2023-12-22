@@ -2809,6 +2809,7 @@ const Travel = () => {
 
     //#region MapSetup
     const [hierarchy, setHierarchy] = useState(trips.elternzeit);
+    const [selectedSubHierarchy, setSelectedSubHierarchy] = useState(null);
 
     function setTrip(name) {
         const trip = trips[name];
@@ -2830,6 +2831,7 @@ const Travel = () => {
         waypoints: waypoints,
         color: "#eb3b5a",
     };
+    const selectedWaypoints = flatten(selectedSubHierarchy, false);
     //#endregion
 
     return (
@@ -2921,7 +2923,11 @@ const Travel = () => {
             {/* Map */}
             <Row>
                 <Col span={7} style={{ overflow: "auto", maxHeight: 700 }}>
-                    <PoiTree hierarchy={hierarchy} setHierarchy={setHierarchy} />
+                    <PoiTree
+                        hierarchy={hierarchy}
+                        setHierarchy={setHierarchy}
+                        setSelectedSubHierarchy={setSelectedSubHierarchy}
+                    />
                 </Col>
                 <Col span={17}>
                     <PoiMap
@@ -2929,6 +2935,7 @@ const Travel = () => {
                         route={route}
                         notMaskedCountries={selectedCountries}
                         maskOpacity={maskOpacity}
+                        selectedMarkers={selectedWaypoints}
                     />
                 </Col>
             </Row>

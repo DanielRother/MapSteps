@@ -17,7 +17,7 @@ import RoutingMachine from "./routing-machine";
 
 // Component which shows the given markers and route an an Mapbox map. Additionally, unimportant countries can be masked
 // TODO: Think about better protecting the credentials, i.e. make the call on the server side (--> remove the NEXT_PUBLIC_ prefix after doing)
-export default function PoiMap({ markers, route, notMaskedCountries, maskOpacity = 0.5 }) {
+export default function PoiMap({ markers, route, notMaskedCountries, maskOpacity = 0.5, selectedMarkers }) {
     //#region Constants
     const DEFAULT_ZOOM = 10;
     const DEFAULT_CENTER = { lat: 52.3758916, lon: 9.7320104 }; // Hannover
@@ -148,11 +148,14 @@ export default function PoiMap({ markers, route, notMaskedCountries, maskOpacity
 
     //#region CameraHandling
     // Default: Zoom on map such that all markers are shown
-    function ChangeView({ markers }) {
+    function ChangeView({ markers, selectedMarkers }) {
         const map = useMap();
 
         let markerBounds = latLngBounds([]);
-        markers.forEach((marker) => {
+
+        let usedMarker = selectedMarkers.length > 0 ? selectedMarkers : markers;
+
+        usedMarker.forEach((marker) => {
             if (marker.enabled) {
                 markerBounds.extend([marker.lat, marker.lon]);
             }
@@ -222,7 +225,11 @@ export default function PoiMap({ markers, route, notMaskedCountries, maskOpacity
             >
                 {/* Base Map (incl. the routing) */}
                 <Pane name="base" style={{ zIndex: 100 }}>
-                    <ChangeView center={homes[0] ?? DEFAULT_CENTER} markers={markers} />
+                    <ChangeView
+                        center={homes[0] ?? DEFAULT_CENTER}
+                        markers={markers}
+                        selectedMarkers={selectedMarkers}
+                    />
 
                     <LayersControl position="topright">
                         <LayersControl.BaseLayer checked name="OSM">

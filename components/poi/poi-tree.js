@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+
 import { Tree } from "antd";
-const { TreeNode } = Tree;
+
 import { DownOutlined } from "@ant-design/icons";
-import { faHouse, faRoad, faQuestion, faMapMarkedAlt } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faMapMarkedAlt, faQuestion, faRoad } from "@fortawesome/free-solid-svg-icons";
 
 import { DecoratedCircle } from "../../utils/decorated-fa-icons";
 
-const PoiTree = ({ hierarchy, setHierarchy }) => {
+const { TreeNode } = Tree;
+
+const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
     if (Object.keys(hierarchy).length === 0) {
         return <></>;
     }
@@ -54,7 +57,9 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
         });
 
     const onSelect = (selectedKeys, info) => {
-        console.log("selected", selectedKeys, info);
+        if (setSelectedSubHierarchy != undefined) {
+            setSelectedSubHierarchy(info.node.dataRef);
+        }
     };
 
     const onExpand = (expandedKeys) => {
@@ -96,8 +101,6 @@ const PoiTree = ({ hierarchy, setHierarchy }) => {
         // console.log("newH", newHierarchy);
         setHierarchy(newHierarchy);
     }
-
-
 
     return (
         <Tree
