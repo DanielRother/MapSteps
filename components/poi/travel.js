@@ -1979,7 +1979,7 @@ const Travel = () => {
                                         enabled: true,
                                     },
                                     {
-                                        id: 595,
+                                        id: 589,
                                         name: "Lipovik",
                                         address: "",
                                         lat: 42.3456211,

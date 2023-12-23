@@ -1,5 +1,3 @@
-import "polyline-encoded";
-
 import countries from "i18n-iso-countries";
 import { useTranslation } from "next-i18next";
 import ReactCountryFlag from "react-country-flag";
@@ -49,7 +47,7 @@ export function getAllCountriesData() {
 }
 
 export function getPlaces(data, type) {
-    if (Object.keys(data).length === 0) {
+    if (data == null || Object.keys(data).length === 0) {
         return [];
     }
     let places = [];
@@ -61,6 +59,10 @@ export function getPlaces(data, type) {
 
     if (data.hasOwnProperty("steps")) {
         data.steps.forEach((step) => {
+            if (step == null) {
+                return;
+            }
+
             if (step.type === type) {
                 places.push(step);
             }
@@ -93,6 +95,10 @@ export function flatten(tree, forceRouteHomes) {
 
     if (tree.hasOwnProperty("steps")) {
         tree.steps.forEach((step) => {
+            if (step == null) {
+                return;
+            }
+
             if (step.enabled && step.type != "Stage") {
                 // console.log("step", step);
                 // console.log("**** push");
