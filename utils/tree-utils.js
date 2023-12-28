@@ -124,9 +124,11 @@ export function removeStep(tree, node) {
 
     let id = node.id;
     let parent = findParent(tree, id);
-    parent.steps = removeEntryById(parent.steps, id);
-    if (parent.steps.length == 0) {
-        delete parent.steps;
+    if (parent != null) {
+        parent.steps = removeEntryById(parent.steps, id);
+        if (parent.steps.length == 0) {
+            delete parent.steps;
+        }
     }
 
     return tree;

@@ -1,4 +1,5 @@
 import { Button, Select, Space, Tag, Upload } from "antd";
+import { DeleteOutlined, SaveOutlined, FolderOpenOutlined, UploadOutlined, DownOutlined } from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
 
 import { getAllCountriesData, groupBy } from "../../utils/map-utils.js";
@@ -105,10 +106,14 @@ export default function CountrySelector({ selected, setSelected, placeholder }) 
                 {addCountryOptionsForContinent(t("South America"), countriesByContinents.get("SA"))}
                 {addCountryOptionsForContinent(t("Antarctica"), countriesByContinents.get("AN"))}
             </Select>
-            <Button onClick={clearSelected}>{t("Clear")}</Button>
-            <Button onClick={saveSelected}>{t("Save")}</Button>
+            <Button onClick={clearSelected} icon={<DeleteOutlined />}>
+                {t("Clear")}
+            </Button>
+            <Button onClick={saveSelected} icon={<SaveOutlined />} style={{ margin: 5 }}>
+                {t("Save")}
+            </Button>
             <Upload accept=".json" showUploadList={false} beforeUpload={loadSelected}>
-                <Button>
+                <Button icon={<FolderOpenOutlined />}>
                     {/* <Icon type="upload" /> TODO: Fix me */}
                     {t("Load")}
                 </Button>

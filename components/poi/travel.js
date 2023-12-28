@@ -1,17 +1,71 @@
 import React, { useState } from "react";
+import { useTranslation } from "next-i18next";
 
-import { Button, Checkbox, Col, InputNumber, Row, Slider, Typography } from "antd";
+import { Button, Checkbox, Col, InputNumber, Row, Slider, Typography, Upload } from "antd";
+import { FileOutlined, SaveOutlined, FolderOpenOutlined, UploadOutlined, DownOutlined } from "@ant-design/icons";
 
-import { flatten, getPlaces } from "../../utils/map-utils";
+import { flatten, getPlaces, getStepColor } from "../../utils/map-utils";
 import CountrySelector from "../scratch/country-selector";
 import PoiMap from "./poi-map";
 import PoiTree from "./poi-tree";
+import StepForm from "./step-form";
 
 const { Text, Link } = Typography;
 
 const Travel = () => {
+    const { t } = useTranslation();
+
     //#region Trips
     // The trips possibly shown on the map
+    const [openNewTripModal, setOpenNewTripModal] = useState(false);
+
+    const closeNewModal = () => {
+        setOpenNewTripModal(false);
+    };
+    const onNewTripSave = (values) => {
+        console.log("New trip, received values of form: ", values);
+
+        let id = 1;
+        let color = getStepColor(values);
+        var newHierarchy = {
+            id: id,
+            name: values.name,
+            type: values.type,
+            address: values.address,
+            enabled: values.enabled,
+            color: color,
+        };
+        if (values.start != null) {
+            newHierarchy.start = values.start;
+        }
+        if (values.lat != null) {
+            newHierarchy.lat = values.lat;
+        }
+        if (values.lon != null) {
+            newHierarchy.lon = values.lon;
+        }
+
+        setHierarchy(newHierarchy);
+        closeNewModal();
+    };
+    const saveTrip = () => {
+        const json = JSON.stringify({ trip: hierarchy }, null, 4);
+        var blob = new Blob([json], { type: "text/json;charset=utf-8" });
+        var FileSaver = require("file-saver");
+        FileSaver.saveAs(blob, hierarchy.name + ".json");
+    };
+    const loadTrip = (file) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            setHierarchy(JSON.parse(e.target.result).trip);
+        };
+        reader.readAsText(file);
+
+        // Prevent upload
+        return false;
+    };
+
     // TODO: Dynamically load this from somewhere
     let mnePois = {
         id: 1,
@@ -2848,10 +2902,27 @@ const Travel = () => {
                         onClick={() => {
                             setTrip(tripname);
                         }}
+                        style={{ margin: 5 }}
                     >
                         {tripname}
                     </Button>
                 ))}
+                <Button
+                    onClick={() => setOpenNewTripModal(true)}
+                    icon={<FileOutlined />}
+                    style={{ margin: 5, marginLeft: 30 }}
+                >
+                    {t("New")}
+                </Button>
+                <Button onClick={saveTrip} icon={<SaveOutlined />} style={{ margin: 5 }}>
+                    {t("Save")}
+                </Button>
+                <Upload accept=".json" showUploadList={false} beforeUpload={loadTrip}>
+                    <Button icon={<FolderOpenOutlined />} style={{ margin: 5 }}>
+                        {/* <Icon type="upload" /> TODO: Fix me */}
+                        {t("Load")}
+                    </Button>
+                </Upload>
             </Row>
 
             {/* Options */}
@@ -2939,6 +3010,13 @@ const Travel = () => {
                     />
                 </Col>
             </Row>
+            <StepForm
+                open={openNewTripModal}
+                onSave={onNewTripSave}
+                onCancel={() => {
+                    closeNewModal();
+                }}
+            />
         </>
     );
 };

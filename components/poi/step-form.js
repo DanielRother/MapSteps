@@ -7,6 +7,8 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "YYYY-MM-DD";
 
+import { v4 as uuidv4 } from "uuid";
+
 const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
     const [form] = Form.useForm();
     const { t } = useTranslation();
@@ -59,25 +61,39 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
         }
     }
 
-    const title = editStep != null ? "Edit step" : "Create step";
+    const editModeStep = parentStep != null || editStep != null;
 
+    let currentTitle = "";
     let currentStart = null;
     let currentLat = null;
     let currentLon = null;
-    if (editStep != null) {
-        currentStart = editStep?.start ? dayjs(editStep.start, dateFormat) : null;
-        currentLat = editStep?.lat;
-        currentLon = editStep?.lon;
+    let currentType = null;
+    if (editModeStep) {
+        if (editStep != null) {
+            currentTitle = "Edit step";
+            currentStart = editStep?.start ? dayjs(editStep.start, dateFormat) : null;
+            currentLat = editStep?.lat;
+            currentLon = editStep?.lon;
+            currentType = editStep?.type;
+        } else {
+            currentTitle = "Create step";
+            currentStart = dayjs();
+            currentLat = parentStep?.lat ?? userLocation.lat;
+            currentLon = parentStep?.lon ?? userLocation.lon;
+            currentType = "POI";
+        }
     } else {
-        currentStart = dayjs();
-        currentLat = parentStep?.lat ?? userLocation.lat;
-        currentLon = parentStep?.lon ?? userLocation.lon;
+        currentTitle = "Create trip";
+        currentStart = null;
+        currentLat = userLocation.lat;
+        currentLon = userLocation.lon;
+        currentType = "Stage";
     }
 
     return (
         <Modal
             open={open}
-            title={title}
+            title={currentTitle}
             okText="Save"
             cancelText="Cancel"
             onCancel={onCancel}
@@ -86,6 +102,9 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
                     .then((values) => {
                         form.resetFields();
                         let expandedValues = { ...values };
+                        if (expandedValues.start != null) {
+                            expandedValues.start = expandedValues.start.format("YYYY-MM-DD");
+                        }
                         expandedValues.parentStep = parentStep;
                         onSave(expandedValues);
                     })
@@ -98,7 +117,7 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
             <Form
                 form={form}
                 layout="vertical"
-                name="form_in_modal"
+                name={"form_in_modal" + uuidv4()}
                 // preserve={false}
                 fields={[
                     {
@@ -111,7 +130,7 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
                     },
                     {
                         name: ["type"],
-                        value: editStep?.type ?? "POI",
+                        value: currentType,
                     },
                     {
                         name: ["start"],
@@ -176,7 +195,7 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
                     label={t("Latitude")}
                     rules={[
                         {
-                            required: coordinatesRequired,
+                            required: coordinatesRequired && editModeStep,
                             message: "Please specify the latitude of the step!",
                         },
                     ]}
@@ -195,7 +214,7 @@ const StepForm = ({ open, editStep, parentStep, onSave, onCancel }) => {
                     label={t("Longitude")}
                     rules={[
                         {
-                            required: coordinatesRequired,
+                            required: coordinatesRequired && editModeStep,
                             message: "Please specify the longitude of the step!",
                         },
                     ]}

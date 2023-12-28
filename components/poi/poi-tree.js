@@ -19,6 +19,7 @@ import {
     removeStep,
 } from "../../utils/tree-utils";
 import { clamp } from "../../utils/math-utils";
+import { getStepColor } from "../../utils/map-utils";
 
 const { TreeNode } = Tree;
 
@@ -37,38 +38,29 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
     const onNewStepSave = (values) => {
         console.log("New, received values of form: ", values);
 
-        let newHierarchy = { ...hierarchy };
-        let newParent = { ...findObjectById(newHierarchy, parentStep.id) };
-        let color = "#000000";
-        switch (values.type) {
-            case "POI":
-                color = "#20bf6b";
-                break;
-            case "Stage":
-                color = "#3867d6";
-                break;
-            case "Home":
-                color = "#fed330";
-                break;
-            case "Routing":
-                color = "#a5b1c2";
-                break;
-
-            default:
-                break;
+        let id = findMaxValue(hierarchy, "id") + 1;
+        let color = getStepColor(values);
+        var newStep = {
+            id: id,
+            name: values.name,
+            type: values.type,
+            address: values.address,
+            enabled: values.enabled,
+            color: color,
+        };
+        if (values.start != null) {
+            newStep.start = values.start;
+        }
+        if (values.lat != null) {
+            newStep.lat = values.lat;
+        }
+        if (values.lon != null) {
+            newStep.lon = values.lon;
         }
 
-        var newStep = {
-            id: findMaxValue(newHierarchy, "id") + 1,
-            name: values.name,
-            address: values.address,
-            lat: values.lat,
-            lon: values.lon,
-            color: color,
-            type: values.type,
-            enabled: values.enabled,
-        };
-        addStep(newHierarchy, newParent, newStep, 1);
+        let newHierarchy = { ...hierarchy };
+        let newParent = { ...findObjectById(newHierarchy, parentStep.id) };
+        newHierarchy = addStep(newHierarchy, newParent, newStep, 1);
         setHierarchy(newHierarchy);
 
         closeNewModal();
@@ -88,17 +80,23 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
 
         newStep.name = values.name;
         newStep.type = values.type;
-        if (newStep.start != null) {
-            newStep.start = values.start.format("YYYY-MM-DD");
-        }
-        if (newStep.lat != null) {
-            newStep.lat = values.lat;
-        }
-        if (newStep.lon != null) {
-            newStep.lon = values.lon;
-        }
         newStep.address = values.address;
         newStep.enabled = values.enabled;
+        if (values.start != null) {
+            newStep.start = values.start;
+        } else {
+            delete newStep.start;
+        }
+        if (values.lat != null) {
+            newStep.lat = values.lat;
+        } else {
+            delete newStep.lat;
+        }
+        if (values.lon != null) {
+            newStep.lon = values.lon;
+        } else {
+            delete newStep.lon;
+        }
 
         newHierarchy = replaceObjectById(newHierarchy, editStep.id, newStep);
         setHierarchy(newHierarchy);
@@ -152,6 +150,7 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
                     </>
                 );
             };
+            var hasParent = findParent(hierarchy, item.id) != null;
             const content = (
                 <div>
                     <Button
@@ -174,21 +173,24 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
                             setOpenEditStepModal(true);
                         }}
                     />
-                    <Button
-                        type="primary"
-                        shape="circle"
-                        icon={<MinusOutlined />}
-                        style={{ marginLeft: 5 }}
-                        onClick={() => {
-                            Modal.confirm({
-                                title: "Delete step",
-                                content: deleteContent(item),
-                                onOk: () => onDeleteStepSave(item),
-                                onCancel: () => console.log("Delete step canceled"),
-                            });
-                        }}
-                    />
-
+                    {hasParent ? (
+                        <Button
+                            type="primary"
+                            shape="circle"
+                            icon={<MinusOutlined />}
+                            style={{ marginLeft: 5 }}
+                            onClick={() => {
+                                Modal.confirm({
+                                    title: "Delete step",
+                                    content: deleteContent(item),
+                                    onOk: () => onDeleteStepSave(item),
+                                    onCancel: () => console.log("Delete step canceled"),
+                                });
+                            }}
+                        />
+                    ) : (
+                        <></>
+                    )}
                     <Button
                         type="primary"
                         shape="circle"
@@ -229,7 +231,7 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
                     break;
                 case "Stage":
                     icon = <DecoratedCircle icon={faMapMarkedAlt} color={item.color} />;
-                    if (item.hasOwnProperty("start")) {
+                    if (item.hasOwnProperty("start") && item.start != null) {
                         title = (
                             <Popover content={content} placement="right">
                                 {item.start + " - " + item.name}

@@ -187,3 +187,26 @@ export async function calculateRoute(start, finish) {
         })
         .catch((error) => console.log("error", error));
 }
+
+export function getStepColor(step) {
+    let color;
+    switch (step.type) {
+        case "POI":
+            color = "#20bf6b";
+            break;
+        case "Stage":
+            color = "#3867d6";
+            break;
+        case "Home":
+            color = "#fed330";
+            break;
+        case "Routing":
+            color = "#a5b1c2";
+            break;
+        default:
+            color = "#000000";
+            break;
+    }
+
+    return color;
+}
