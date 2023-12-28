@@ -2,9 +2,11 @@ import React, { useState } from "react";
 
 import { Tree, Popover, Button, Modal } from "antd";
 
-import { DownOutlined, PlusOutlined, EditOutlined, MinusOutlined } from "@ant-design/icons";
+import { DownOutlined, PlusOutlined, EditOutlined, MinusOutlined, UpOutlined } from "@ant-design/icons";
 import { faHouse, faMapMarkedAlt, faQuestion, faRoad } from "@fortawesome/free-solid-svg-icons";
 import { DecoratedCircle } from "../../utils/decorated-fa-icons";
+
+import { arrayMoveImmutable } from "array-move";
 
 import StepForm from "./step-form";
 import {
@@ -16,6 +18,7 @@ import {
     countSteps,
     removeStep,
 } from "../../utils/tree-utils";
+import { clamp } from "../../utils/math-utils";
 
 const { TreeNode } = Tree;
 
@@ -110,6 +113,16 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
         setHierarchy(newHierarchy);
     };
 
+    const onPositionChange = (item, direction) => {
+        let newHierarchy = { ...hierarchy };
+        let parent = { ...findParent(hierarchy, item.id) };
+        const curIndex = parent.steps.findIndex((step) => step.id === item.id);
+        let newIndex = clamp(curIndex + direction, 0, parent.steps.length);
+        parent.steps = arrayMoveImmutable(parent.steps, curIndex, newIndex);
+        newHierarchy = replaceObjectById(newHierarchy, parent.id, parent);
+        setHierarchy(newHierarchy);
+    };
+
     //#endregion
 
     //#region Setup Tree
@@ -173,6 +186,25 @@ const PoiTree = ({ hierarchy, setHierarchy, setSelectedSubHierarchy }) => {
                                 onOk: () => onDeleteStepSave(item),
                                 onCancel: () => console.log("Delete step canceled"),
                             });
+                        }}
+                    />
+
+                    <Button
+                        type="primary"
+                        shape="circle"
+                        icon={<UpOutlined />}
+                        style={{ marginLeft: 25 }}
+                        onClick={() => {
+                            onPositionChange(item, -1);
+                        }}
+                    />
+                    <Button
+                        type="primary"
+                        shape="circle"
+                        icon={<DownOutlined />}
+                        style={{ marginLeft: 5 }}
+                        onClick={() => {
+                            onPositionChange(item, +1);
                         }}
                     />
                 </div>
